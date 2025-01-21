@@ -6,12 +6,12 @@ class Chicken extends MovableObject {
     super().loadImage("./imgs/3_enemies_chicken/chicken_normal/1_walk/1_w.png");
     this.x = 200 + Math.random() * 520;
     this.y = 320 + Math.random() * 20;
-//     this.animate();
+    //     this.animate();
   }
 
-//   animate() {
-//     setInterval(() => {
-//       this.x -= 0.6;
-//     }, 1000 / 60);
-//   }
+  //   animate() {
+  //     setInterval(() => {
+  //       this.x -= 0.6;
+  //     }, 1000 / 60);
+  //   }
 }

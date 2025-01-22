@@ -23,12 +23,13 @@ class MovableObject {
    *
    *  @param {Array} arr - ['img/image1.png', 'img/image2.png', ... ]
    */
-  loadImages(arr) {
-    /* arr ist abkürzung für array*/
-    arr.forEach((path) => {
-      let img = new Image();
-      img.src = path;
-     this.imageCache[path] = path;
+  loadImages(arr) {                               /* arr ist array hier laden wir die bilder des characters pepe rein*/
+   
+    arr.forEach((path) => {                     /* arr ist abkürzung für array*/
+                                                            /* schleife damit alle bilder im arr von function loadImages angezeigt werden*/
+      let img = new Image();                  /* hier lege wir eine neue variable an mit einem bild*/
+      img.src = path;                               /* hier laden wir das bild in das diese new Image hinein */
+      this.imageCache[path] = img;       /* image cache wird geupdatet hier sind die bilder reingeladen*/
     });
   }
 

@@ -15,10 +15,12 @@ class Chickensmall extends MovableObject {
     this.y = 340;
     this.loadImages(this.IMAGES_WALKING);
     this.animate();
-    this.moveLeft();
+    this.speed = 0.3 + Math.random() * 0.5;
   }
 
   animate() {
+    this.moveLeft();
+
     setInterval(() => {
       let i =
         this.currentImage %
@@ -27,11 +29,6 @@ class Chickensmall extends MovableObject {
       this.img = this.imageCache[path];
       this
         .currentImage++; /* jetzt wird um eins erhöht  also zum 1ten bild usw */
-    }, 100);
-  }
-  moveLeft() {
-    setInterval(() => {
-      this.x -= 0.9;
-    }, 1000 / 60);
+    }, 50);
   }
 }

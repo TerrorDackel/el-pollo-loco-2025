@@ -1,4 +1,4 @@
-class BackgroundObjects extends MovableObject {
+class BackgroundObject extends MovableObject {
   height = 800;
   width = 720;
 
@@ -8,7 +8,4 @@ class BackgroundObjects extends MovableObject {
     this.y = -300;
   }
 
-  //   moveLeft() {
-
-  //   }
 }

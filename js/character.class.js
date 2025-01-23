@@ -26,17 +26,19 @@ class Character extends MovableObject {
 
       setInterval(() => {
             if (this.world.keyboard.RIGHT) {
-              this.x += this.speed;
+              this.x += this.speed;                   /* += dann bewegung nach rechts */
+              this.otherDirection = false;        /* wenn rechtstaste dann wird img character nicht gespiegelt, false*/
             }
 
             if (this.world.keyboard.LEFT) {
-              this.x -= this.speed;
+              this.x -= this.speed;                           /* -= dann bewegung nach links */
+              this.otherDirection = true;                /* wenn linkstaste dann wird img character gespiegelt, true*/
             }
       }, 1000 / 60);
 
 
       setInterval(() => {
-            if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
+            if (this.world.keyboard.RIGHT ||  this.world.keyboard.LEFT) {
               this.x += this.speed;
 
               /*walk animation*/

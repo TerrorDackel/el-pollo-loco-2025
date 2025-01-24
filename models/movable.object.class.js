@@ -41,6 +41,13 @@ class MovableObject {
     });
   }
 
+  playAnimation(images) {
+    let i = this.currentImage % this.IMAGES_WALKING.length; /*       let i = 0 % 6;     */
+    let path = images[i]; /* das 0te bild wird geladen */
+    this.img = this.imageCache[path];
+    this.currentImage++; /* jetzt wird um eins erhöht  also zum 1ten bild usw */
+  }
+
   moveRight() {
     console.log("Moving right");
   }

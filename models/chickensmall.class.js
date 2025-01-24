@@ -11,24 +11,18 @@ class Chickensmall extends MovableObject {
 
   constructor() {
     super().loadImage("./imgs/3_enemies_chicken/chicken_small/1_walk/1_w.png");
-    this.x = 200 + Math.random() * 520;
+    this.x = 300 + Math.random() * 3500;
     this.y = 340;
     this.loadImages(this.IMAGES_WALKING);
     this.animate();
-    this.speed = 0.3 + Math.random() * 0.5;
+    this.speed = 0.7 + Math.random() * 1.5;
   }
 
   animate() {
     this.moveLeft();
 
     setInterval(() => {
-      let i =
-        this.currentImage %
-        this.IMAGES_WALKING.length; /*       let i = 0 % 6;     */
-      let path = this.IMAGES_WALKING[i]; /* das 0te bild wird geladen */
-      this.img = this.imageCache[path];
-      this
-        .currentImage++; /* jetzt wird um eins erhöht  also zum 1ten bild usw */
+      let i = this.playAnimation(this.IMAGES_WALKING);
     }, 50);
   }
 }

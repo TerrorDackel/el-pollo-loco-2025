@@ -3,7 +3,7 @@ class Character extends MovableObject {
   width = 150;
   x = 0;
   y = 110;
-  speed = 5;
+  speed = 12;
   IMAGES_WALKING = [
     /* stripe bilder vom character pepe wie er läuft*/
     "imgs/2_character_pepe/2_walk/W-21.png" /* das 0te bild*/,
@@ -16,7 +16,7 @@ class Character extends MovableObject {
   world;
   walking_sound = new Audio("./audio/1_walking/walking.mp3");
   constructor() {
-    super().loadImage("./imgs/2_character_pepe/2_walk/W-21.png");
+    super().loadImage(this.IMAGES_WALKING[0]);
     this.loadImages(this.IMAGES_WALKING);
     this.animate();
   }
@@ -33,19 +33,13 @@ class Character extends MovableObject {
         this.otherDirection = true; /* wenn linkstaste dann wird img character gespiegelt, true*/
         this.walking_sound.play();
       }
-      this.world.camera_x = -this.x + 0;
+      this.world.camera_x = -this.x + 100;
     }, 1000 / 60);
 
     setInterval(() => {
       if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
         /*walk animation*/
-        let i =
-          this.currentImage %
-          this.IMAGES_WALKING.length; /*       let i = 0 % 6;     */
-        let path = this.IMAGES_WALKING[i]; /* das 0te bild wird geladen */
-        this.img = this.imageCache[path];
-        this
-          .currentImage++; /* jetzt wird um eins erhöht  also zum 1ten bild usw */
+      this.playAnimation(this.IMAGES_WALKING);
       }
     }, 50);
   }

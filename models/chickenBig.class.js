@@ -1,4 +1,4 @@
-class Endboss extends MovableObject {
+class ChickenBig extends MovableObject {
   height = 150;
   width = 150;
 
@@ -7,9 +7,9 @@ class Endboss extends MovableObject {
     "/imgs/4_enemie_boss_chicken/1_walk/G1.png",
     "/imgs/4_enemie_boss_chicken/1_walk/G2.png",
     "/imgs/4_enemie_boss_chicken/1_walk/G3.png",
-    "/imgs/4_enemie_boss_chicken/1_walk/G4.png"
+    "/imgs/4_enemie_boss_chicken/1_walk/G4.png",
   ];
-  walking_sound = new Audio("/audio/5_chickenBoss/chickenBossLev1.mp3");
+  walking_sound = new Audio("/audio/4_chicken/chickenBig.mp3");
 
   constructor() {
     super().loadImage(this.IMAGES_WALKING[0]);

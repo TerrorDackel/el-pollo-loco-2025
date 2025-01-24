@@ -33,7 +33,7 @@ class Character extends MovableObject {
         this.otherDirection = true; /* wenn linkstaste dann wird img character gespiegelt, true*/
         this.walking_sound.play();
       }
-      this.world.camera_x = -this.x + 100;
+      this.world.camera_x = -this.x + 0;
     }, 1000 / 60);
 
     setInterval(() => {

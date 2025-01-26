@@ -7,20 +7,21 @@ class MovableObject {
   imageCache = {};
   currentImage = 0;
   speed = 0.25;
+  otherDirection = false;
   speedY = 0;
   acceleration = 2;
 
-applyGravity( ){                                          /* hier wird die gravitation eingebaut, damit alle movables nach unten fallen bzw beim springen wieder nach unten fallen*/
-  setIntervall(() => {
-    if(this.y < 100 ) {                                   /* damit nicht aus dem canvas gefallen wird eine mindest höhe von y < 100 */
-      this.y += this.speedY;
+applyGravity( ) {                                          /* hier wird die gravitation eingebaut, damit alle movables nach unten fallen bzw beim springen wieder nach unten fallen*/
+  setInterval(() => {
+    if (this.isAboveGround()  || this.speedY > 0) {                               
+      this.y -= this.speedY;
       this.speedY -= this.acceleration;
     }
-  },  1000 / 23);
+  },  1000 / 25);
 }
 
-isAboveGround() {
-  this.y < 100;
+isAboveGround() {                                     /* gibt uns feedback ob sich ein movable object auf dem boden befindet oder nicht*/
+  return this.y < 100;
 }
   
   loadImage(path) {
@@ -64,12 +65,13 @@ isAboveGround() {
   }
 
   moveRight() {
-    console.log("Moving right");
+       this.x += this.speed; /* += dann bewegung nach rechts */
+
+
   }
 
   moveLeft() {
-    setInterval(() => {
       this.x -= this.speed;
-    }, 1000 / 60);
+
   }
 }

@@ -5,7 +5,7 @@ class Character extends MovableObject {
   y = 110;
   speed = 12;
   IMAGES_WALKING = [
-    /* stripe bilder vom character pepe wie er läuft*/
+    /* stripe bilder vom character pepe wie er walked*/
     "./imgs/2_character_pepe/2_walk/W-21.png" /* das 0te bild*/,
     "./imgs/2_character_pepe/2_walk/W-22.png",
     "./imgs/2_character_pepe/2_walk/W-23.png",
@@ -15,6 +15,7 @@ class Character extends MovableObject {
   ];
 
   IMAGES_JUMPING = [
+    /* stripe bilder vom character pepe wie er jumped */
     "./imgs/2_character_pepe/3_jump/J-31.png",
     "./imgs/2_character_pepe/3_jump/J-32.png",
     "./imgs/2_character_pepe/3_jump/J-33.png",
@@ -23,32 +24,41 @@ class Character extends MovableObject {
     "./imgs/2_character_pepe/3_jump/J-36.png",
     "./imgs/2_character_pepe/3_jump/J-37.png",
     "./imgs/2_character_pepe/3_jump/J-38.png",
-    "./imgs/2_character_pepe/3_jump/J-39.png"
+    "./imgs/2_character_pepe/3_jump/J-39.png",
+    "./imgs/2_character_pepe/2_walk/W-26.png",
   ];
 
   world;
   walking_sound = new Audio("./audio/1_walking/walking.mp3");
+  // jumping_sound = new Audio('/audio/2_jump/maleShortJump.mp3');
 
   constructor() {
     super().loadImage(this.IMAGES_WALKING[0]);
     this.loadImages(this.IMAGES_WALKING);
-        this.loadImages(this.IMAGES_JUMPING);
+    this.loadImages(this.IMAGES_JUMPING);
     this.applyGravity();
     this.animate();
   }
   animate() {
     setInterval(() => {
+      this.walking_sound.pause();
       if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
-        this.x += this.speed; /* += dann bewegung nach rechts */
+        this.moveRight();
         this.otherDirection = false; /* wenn rechtstaste dann wird img character nicht gespiegelt, false*/
         this.walking_sound.play();
       }
 
       if (this.world.keyboard.LEFT && this.x > 0) {
-        this.x -= this.speed; /* -= dann bewegung nach links */
-        this.otherDirection = true; /* wenn linkstaste dann wird img character gespiegelt, true*/
+        this.moveLeft();
+        this.otherDirection = true;
         this.walking_sound.play();
       }
+
+      if (this.world.keyboard.UP && !this.isAboveGround()) {
+        this.jump();
+        // this.jumping_sound.play();
+      }
+
       this.world.camera_x = -this.x + 100;
 
       /*--------------------------sound wenn nahe endboss----------------------------------------------------------------------------------------------------------------------------------------*/
@@ -71,16 +81,21 @@ class Character extends MovableObject {
     }, 1000 / 60);
 
     setInterval(() => {
-      if(this.isAboveGround()) { /* wenn sich der character über dem boden befindet isAboveGround()  dann*/
-        this.playAnimation(this.IMAGES_JUMPING);
-      }
-
-      if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-        /*walk animation*/
-        this.playAnimation(this.IMAGES_WALKING);
+      if (this.isAboveGround()) {
+        /* wenn sich der character über dem boden befindet (isAboveGround())  dann*/
+        this.playAnimation(
+          this.IMAGES_JUMPING
+        ); /*dann wird diese animation jumping abgespielt*/
+      } else {
+        if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
+          /* wenn rechts oder links gedrückt wird dann wird die animation walking abgespielt*/
+          this.playAnimation(this.IMAGES_WALKING); /*walk animation*/
+        }
       }
     }, 50);
   }
 
-  jump() {}
+  jump() {
+           this.speedY = 28;
+  }
 }

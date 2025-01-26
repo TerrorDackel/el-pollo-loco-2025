@@ -7,7 +7,22 @@ class MovableObject {
   imageCache = {};
   currentImage = 0;
   speed = 0.25;
+  speedY = 0;
+  acceleration = 2;
 
+applyGravity( ){                                          /* hier wird die gravitation eingebaut, damit alle movables nach unten fallen bzw beim springen wieder nach unten fallen*/
+  setIntervall(() => {
+    if(this.y < 100 ) {                                   /* damit nicht aus dem canvas gefallen wird eine mindest höhe von y < 100 */
+      this.y += this.speedY;
+      this.speedY -= this.acceleration;
+    }
+  },  1000 / 23);
+}
+
+isAboveGround() {
+  this.y < 100;
+}
+  
   loadImage(path) {
     this.img = new Image();
     this.img.src = path;

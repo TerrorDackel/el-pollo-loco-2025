@@ -13,12 +13,27 @@ class Character extends MovableObject {
     "./imgs/2_character_pepe/2_walk/W-25.png",
     "./imgs/2_character_pepe/2_walk/W-26.png",
   ];
+
+  IMAGES_JUMPING = [
+    "./imgs/2_character_pepe/3_jump/J-31.png",
+    "./imgs/2_character_pepe/3_jump/J-32.png",
+    "./imgs/2_character_pepe/3_jump/J-33.png",
+    "./imgs/2_character_pepe/3_jump/J-34.png",
+    "./imgs/2_character_pepe/3_jump/J-35.png",
+    "./imgs/2_character_pepe/3_jump/J-36.png",
+    "./imgs/2_character_pepe/3_jump/J-37.png",
+    "./imgs/2_character_pepe/3_jump/J-38.png",
+    "./imgs/2_character_pepe/3_jump/J-39.png"
+  ];
+
   world;
   walking_sound = new Audio("./audio/1_walking/walking.mp3");
- 
+
   constructor() {
     super().loadImage(this.IMAGES_WALKING[0]);
     this.loadImages(this.IMAGES_WALKING);
+        this.loadImages(this.IMAGES_JUMPING);
+    this.applyGravity();
     this.animate();
   }
   animate() {
@@ -38,27 +53,28 @@ class Character extends MovableObject {
 
       /*--------------------------sound wenn nahe endboss----------------------------------------------------------------------------------------------------------------------------------------*/
 
-  // if (this.world.endboss) {
-  //       let distance = Math.abs(this.x - this.world.endboss.x); // Berechne die horizontale Distanz
+      // if (this.world.endboss) {
+      //       let distance = Math.abs(this.x - this.world.endboss.x); // Berechne die horizontale Distanz
 
-  //       // Wenn der Character nahe beim Endboss ist, spiele den Sound ab
-  //       if (distance >= 1 && distance <= 650) {
-  //         if (this.world.endboss.endbosssound.paused) {
-  //           this.world.endboss.endbosssound.play(); // Spiele den Sound des Endboss
-  //         }
-  //       } else {
-  //         this.world.endboss.endbosssound.pause(); // Stoppe den Sound, wenn die Distanz nicht passt
-  //         this.world.endboss.endbosssound.currentTime = 0; // Setze den Sound zurück
-  //       }
-  //     }
-
+      //       // Wenn der Character nahe beim Endboss ist, spiele den Sound ab
+      //       if (distance >= 1 && distance <= 500) {
+      //         if (this.world.endboss.endbosssound.paused) {
+      //           this.world.endboss.endbosssound.play(); // Spiele den Sound des Endboss
+      //         }
+      //       } else {
+      //         this.world.endboss.endbosssound.pause(); // Stoppe den Sound, wenn die Distanz nicht passt
+      //         this.world.endboss.endbosssound.currentTime = 0; // Setze den Sound zurück
+      //       }
+      //     }
 
       /*--------------------------soundende wenn nicht nahe endboss----------------------------------------------------------------------------------------------------------------------------------------*/
-
-
     }, 1000 / 60);
 
     setInterval(() => {
+      if(this.isAboveGround()) { /* wenn sich der character über dem boden befindet isAboveGround()  dann*/
+        this.playAnimation(this.IMAGES_JUMPING);
+      }
+
       if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
         /*walk animation*/
         this.playAnimation(this.IMAGES_WALKING);

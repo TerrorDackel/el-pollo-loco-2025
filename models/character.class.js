@@ -4,6 +4,8 @@ class Character extends MovableObject {
   x = 0;
   y = 110;
   speed = 12;
+
+
   IMAGES_WALKING = [
     /* stripe bilder vom character pepe wie er walked*/
     "./imgs/2_character_pepe/2_walk/W-21.png" /* das 0te bild*/,
@@ -11,7 +13,7 @@ class Character extends MovableObject {
     "./imgs/2_character_pepe/2_walk/W-23.png",
     "./imgs/2_character_pepe/2_walk/W-24.png",
     "./imgs/2_character_pepe/2_walk/W-25.png",
-    "./imgs/2_character_pepe/2_walk/W-26.png",
+    "./imgs/2_character_pepe/2_walk/W-26.png"
   ];
 
   IMAGES_JUMPING = [
@@ -25,7 +27,7 @@ class Character extends MovableObject {
     "./imgs/2_character_pepe/3_jump/J-37.png",
     "./imgs/2_character_pepe/3_jump/J-38.png",
     "./imgs/2_character_pepe/3_jump/J-39.png",
-    "./imgs/2_character_pepe/2_walk/W-26.png",
+    "./imgs/2_character_pepe/2_walk/W-26.png"
   ];
 
   world;
@@ -39,6 +41,14 @@ class Character extends MovableObject {
     this.applyGravity();
     this.animate();
   }
+
+  isColliding(mo) {
+    return this.x + this.width > mo.x &&
+    this.y + this.height > mo.y &&
+    this.x < mo.x &&
+    this.y < mo.y + mo.height
+  }
+
   animate() {
     setInterval(() => {
       this.walking_sound.pause();
@@ -64,10 +74,11 @@ class Character extends MovableObject {
       /*--------------------------sound wenn nahe endboss----------------------------------------------------------------------------------------------------------------------------------------*/
 
       // if (this.world.endboss) {
-      //       let distance = Math.abs(this.x - this.world.endboss.x); // Berechne die horizontale Distanz
+      //       let distanceRightOfCharacter = Math.abs((this.x  + this.width) - this.world.endboss.x) 
+      //      let distanceLeftOfCharacter = (this.x - (this.world.endboss.x + this.world.endboss.width)); // Berechne die horizontale Distanz
 
       //       // Wenn der Character nahe beim Endboss ist, spiele den Sound ab
-      //       if (distance >= 1 && distance <= 500) {
+      //       if (distanceRightOfCharacter || distanceLeftOfCharacter >= 1 && distance <= 500) {
       //         if (this.world.endboss.endbosssound.paused) {
       //           this.world.endboss.endbosssound.play(); // Spiele den Sound des Endboss
       //         }

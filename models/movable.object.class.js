@@ -1,16 +1,12 @@
-class MovableObject {
-  x = 120;
-  y = 280;
-  img;
-  height = 200;
-  width = 100;
-  imageCache = {};
-  currentImage = 0;
+class MovableObject extends DrawableObject {
+
   speed = 0.25;
   otherDirection = false;
   speedY = 0;
   acceleration = 2;
-
+  energy = 100; /* höhe der grundenergy bzw Tp leben der mo hat*/
+  lastHit = 0;
+ 
   applyGravity() {
     /* hier wird die gravitation eingebaut, damit alle movables nach unten fallen bzw beim springen wieder nach unten fallen*/
     setInterval(() => {
@@ -26,14 +22,7 @@ class MovableObject {
     return this.y < 100;
   }
 
-  loadImage(path) {
-    this.img = new Image();
-    this.img.src = path;
-  }
 
-  draw(ctx) {
-    ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
-  }
 
   drawFrame(ctx) {
     if (this instanceof Character || this instanceof Chicken) {
@@ -46,21 +35,37 @@ class MovableObject {
     }
   }
 
-  isColliding(mo) {                             /* wenn kollision movableObject*/
-    return this.x + this.width > mo.x &&
+  isColliding(mo) {
+    /* wenn kollision movableObject*/
+    return (
+      this.x + this.width > mo.x &&
       this.y + this.height > mo.y &&
       this.x < mo.x &&
-      this.y < mo.y + mo.height;
+      this.y < mo.y + mo.height
+    );
   }
 
-  loadImages(arr) {
-    arr.forEach((path) => {
-      let img = new Image();
-      img.src = path;
-      this.imageCache[path];
-      this.currentImage = 0;
-    });
+  hit() {
+    this.energy -= 20;
+    if (this.energy < 0) {
+      this.energy = 0;
+    }
+    else {
+      this.lastHit = new Date().getTime();
+    }
   }
+
+  isHurt() {
+    let timepassed = new Date().getTime() - this.lastHit;         /* differenz in milisekunden*/
+    timepassed = timepassed / 1000;                                     /* umgerechnet das die differenz in sekunden angezeigt wird*/
+    return timepassed < 1;
+  }
+
+  isDead() {
+    return this.energy == 0;
+  }
+
+
 
   /**
    *
@@ -84,7 +89,7 @@ class MovableObject {
   playAnimation(images) {
     let i =
       this.currentImage %
-      this.IMAGES_WALKING.length; /*       let i = 0 % 6;     */
+      images.length; /*       let i = 0 % 6;     */
     let path = images[i]; /* das 0te bild wird geladen */
     this.img = this.imageCache[path];
     this.currentImage++; /* jetzt wird um eins erhöht  also zum 1ten bild usw */
@@ -96,5 +101,9 @@ class MovableObject {
 
   moveLeft() {
     this.x -= this.speed;
+  }
+
+  jump(){
+    this. speedY = 30;
   }
 }

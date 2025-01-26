@@ -24,8 +24,8 @@ class World {
    setInterval(() => {
      this.level.enemies.forEach((enemy) => {
        if (this.character.isColliding(enemy)) {
-          this.character.energy -= 5;
-          console.log("character kollidiert, energy wird um 5 abgezogen", this.character.energy);
+        this.character.hit();
+        console.log("character kollidiert, energie beträgt noch", this.character.energy);
        }
      });
    }, 300);

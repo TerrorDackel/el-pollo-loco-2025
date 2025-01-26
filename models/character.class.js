@@ -4,14 +4,26 @@ class Character extends MovableObject {
   x = 0;
   y = 110;
   speed = 12;
-  energy = 100; /* höhe der grundenergy bzw Tp leben der mo hat*/
 
-  offset = {
-    top: 120,
-    left: 40,
-    right: 30,
-    bottom: 30,
-  };
+  // offset = {
+  //   top: 120,
+  //   left: 40,
+  //   right: 30,
+  //   bottom: 30,
+  // };
+
+  IMAGES_LONG_IDLE = [
+    "imgs/2_character_pepe/1_idle/long_idle/I-11.png",
+    "imgs/2_character_pepe/1_idle/long_idle/I-12.png",
+    "imgs/2_character_pepe/1_idle/long_idle/I-13.png",
+    "imgs/2_character_pepe/1_idle/long_idle/I-14.png",
+    "imgs/2_character_pepe/1_idle/long_idle/I-15.png",
+    "imgs/2_character_pepe/1_idle/long_idle/I-16.png",
+    "imgs/2_character_pepe/1_idle/long_idle/I-17.png",
+    "imgs/2_character_pepe/1_idle/long_idle/I-18.png",
+    "imgs/2_character_pepe/1_idle/long_idle/I-19.png",
+    "imgs/2_character_pepe/1_idle/long_idle/I-20.png"
+  ];
 
   IMAGES_WALKING = [
     /* stripe bilder vom character pepe wie er walked*/
@@ -37,14 +49,33 @@ class Character extends MovableObject {
     "./imgs/2_character_pepe/2_walk/W-26.png",
   ];
 
+  IMAGES_HURT = [
+    "./imgs/2_character_pepe/4_hurt/H-41.png",
+    "./imgs/2_character_pepe/4_hurt/H-42.png",
+    "./imgs/2_character_pepe/4_hurt/H-43.png",
+  ];
+
+  IMAGES_DEAD = [
+    "./imgs/2_character_pepe/5_dead/D-51.png",
+    "./imgs/2_character_pepe/5_dead/D-52.png",
+    "./imgs/2_character_pepe/5_dead/D-53.png",
+    "./imgs/2_character_pepe/5_dead/D-54.png",
+    "./imgs/2_character_pepe/5_dead/D-55.png",
+    "./imgs/2_character_pepe/5_dead/D-56.png",
+    "./imgs/2_character_pepe/5_dead/D-57.png",
+  ];
   world;
+
   walking_sound = new Audio("./audio/1_walking/walking.mp3");
   // jumping_sound = new Audio('/audio/2_jump/maleShortJump.mp3');
+  // dead_sound = new Audio('/audio/9_lost/man dying.mp3');
 
   constructor() {
     super().loadImage(this.IMAGES_WALKING[0]);
     this.loadImages(this.IMAGES_WALKING);
     this.loadImages(this.IMAGES_JUMPING);
+    this.loadImages(this.IMAGES_HURT);
+    this.loadImages(this.IMAGES_DEAD);
     this.applyGravity();
     this.animate();
   }
@@ -101,7 +132,13 @@ class Character extends MovableObject {
     }, 1000 / 60);
 
     setInterval(() => {
-      if (this.isAboveGround()) {
+        /* wenn er tot ist*/
+      if (this.isDead()) {
+        this.playAnimation(this.IMAGES_DEAD); /* wenn energy 0 dann tot*/
+      } else if (this.isHurt()) {
+      /* wenn er verletzt ist*/
+        this.playAnimation(this.IMAGES_HURT);
+      } else if (this.isAboveGround()) {
         /* wenn sich der character über dem boden befindet (isAboveGround())  dann*/
         this.playAnimation(
           this.IMAGES_JUMPING
@@ -119,3 +156,5 @@ class Character extends MovableObject {
     this.speedY = 28;
   }
 }
+
+

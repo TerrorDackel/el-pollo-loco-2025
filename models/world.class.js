@@ -5,6 +5,7 @@ class World {
   ctx;
   keyboard;
   camera_x = 0;
+  statusBar = new StatusBar();
   
 
   constructor(canvas, keyboard) {
@@ -21,10 +22,12 @@ class World {
   }
 
   checkCollisions() {
-   setInterval(() => {
+    
+    setInterval(() => {
      this.level.enemies.forEach((enemy) => {
        if (this.character.isColliding(enemy)) {
         this.character.hit();
+        this.statusBar.setPersentageHealth(this.character.energy);
         console.log("character kollidiert, energie beträgt noch", this.character.energy);
        }
      });
@@ -34,14 +37,24 @@ class World {
   draw() {
     /* die reihenfolge hier ist die layerreihenfolge!!! in dieserreihenfolge lest du die folien immer oben drauf*/
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
     this.ctx.translate(this.camera_x, 0);
     this.addObjectsToMap(this.level.backgroundObjects);
+
+    this.ctx.translate(-this.camera_x, 0);
+    // Zeichne alle Statusleisten
+    this.statusBar.drawStatusBars(this.ctx);
+
+    this.ctx.translate(this.camera_x, 0);
+
     this.addToMap(this.character);
     this.addObjectsToMap(this.level.clouds);
     this.addObjectsToMap(this.level.enemies);
+
     this.ctx.translate(-this.camera_x, 0);
 
-    let self = this; /* draw wird immer wieder aufgerufen was die grafikkarte her gibt -  requestAnimationFrame*/
+    let self =
+      this; /* draw wird immer wieder aufgerufen was die grafikkarte her gibt -  requestAnimationFrame*/
     requestAnimationFrame(function () {
       self.draw();
     });

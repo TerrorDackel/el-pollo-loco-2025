@@ -24,16 +24,7 @@ class MovableObject extends DrawableObject {
 
 
 
-  drawFrame(ctx) {
-    if (this instanceof Character || this instanceof Chicken) {
-      /* instanceof heißt wenn man teil von ... ist. hier zb wenn man ein character oder ein chicken ist*/
-      ctx.beginPath();
-      ctx.lineWidth = "2";
-      ctx.strokeStyle = "blue";
-      ctx.rect(this.x, this.y, this.width, this.height);
-      ctx.stroke();
-    }
-  }
+
 
   isColliding(mo) {
     /* wenn kollision movableObject*/

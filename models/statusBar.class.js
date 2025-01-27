@@ -51,8 +51,8 @@ class StatusBar extends DrawableObject {
   drawStatusBars(ctx) {
  
     this.drawBar(ctx, this.imgHealth, this.x, this.y);
-    this.drawBar(ctx, this.imgCoins, this.x, this.y + 1 * this.height);   
-    this.drawBar(ctx, this.imgBottles, this.x, this.y + 2 * this.height); 
+    this.drawBar(ctx, this.imgCoins, this.x + 1.15 * this.width, this.y);   
+    this.drawBar(ctx, this.imgBottles, this.x + 2.25 * this.width, this.y); 
    }
 
   drawBar(ctx, img, x, y) {

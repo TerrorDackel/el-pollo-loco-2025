@@ -18,8 +18,14 @@ class MovableObject extends DrawableObject {
   }
 
   isAboveGround() {
+    if (this instanceof ThrowableObjects) {
+      return true;
+    }
+    else {
+
     /* gibt uns feedback ob sich ein movable object auf dem boden befindet oder nicht*/
     return this.y < 100;
+    }
   }
 
 

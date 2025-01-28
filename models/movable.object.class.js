@@ -2,8 +2,8 @@ class MovableObject extends DrawableObject {
 
   speed = 0.25;
   otherDirection = false;
-  speedY = 0;
-  acceleration = 2;
+  speedY = 20;
+  acceleration = 3;
   energy = 100; /* höhe der grundenergy bzw Tp leben der mo hat*/
   lastHit = 0;
  
@@ -27,10 +27,6 @@ class MovableObject extends DrawableObject {
     return this.y < 100;
     }
   }
-
-
-
-
 
   isColliding(mo) {
     /* wenn kollision movableObject*/
@@ -62,8 +58,6 @@ class MovableObject extends DrawableObject {
     return this.energy == 0;
   }
 
-
-
   /**
    *
    *  @param {Array} arr - ['img/image1.png', 'img/image2.png', ... ]
@@ -86,14 +80,14 @@ class MovableObject extends DrawableObject {
   playAnimation(images) {
     let i =
       this.currentImage %
-      images.length; /*       let i = 0 % 6;     */
-    let path = images[i]; /* das 0te bild wird geladen */
+      images.length;                      /*       let i = 0 % 6;     */
+    let path = images[i];                 /* das 0te bild wird geladen */
     this.img = this.imageCache[path];
-    this.currentImage++; /* jetzt wird um eins erhöht  also zum 1ten bild usw */
+    this.currentImage++;              /* jetzt wird um eins erhöht  also zum 1ten bild usw */
   }
 
   moveRight() {
-    this.x += this.speed; /* += dann bewegung nach rechts */
+    this.x += this.speed;             /* += dann bewegung nach rechts */
   }
 
   moveLeft() {
@@ -101,6 +95,6 @@ class MovableObject extends DrawableObject {
   }
 
   jump(){
-    this. speedY = 30;
+    this. speedY = 35;
   }
 }

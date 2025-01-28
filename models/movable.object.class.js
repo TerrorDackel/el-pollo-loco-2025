@@ -1,12 +1,11 @@
 class MovableObject extends DrawableObject {
-
   speed = 0.25;
   otherDirection = false;
   speedY = 20;
   acceleration = 3;
   energy = 100; /* höhe der grundenergy bzw Tp leben der mo hat*/
   lastHit = 0;
- 
+
   applyGravity() {
     /* hier wird die gravitation eingebaut, damit alle movables nach unten fallen bzw beim springen wieder nach unten fallen*/
     setInterval(() => {
@@ -20,11 +19,9 @@ class MovableObject extends DrawableObject {
   isAboveGround() {
     if (this instanceof ThrowableObjects) {
       return true;
-    }
-    else {
-
-    /* gibt uns feedback ob sich ein movable object auf dem boden befindet oder nicht*/
-    return this.y < 100;
+    } else {
+      /* gibt uns feedback ob sich ein movable object auf dem boden befindet oder nicht*/
+      return this.y < 100;
     }
   }
 
@@ -42,15 +39,17 @@ class MovableObject extends DrawableObject {
     this.energy -= 20;
     if (this.energy < 0) {
       this.energy = 0;
-    }
-    else {
+    } else {
       this.lastHit = new Date().getTime();
     }
   }
 
   isHurt() {
-    let timepassed = new Date().getTime() - this.lastHit;         /* differenz in milisekunden*/
-    timepassed = timepassed / 1000;                                     /* umgerechnet das die differenz in sekunden angezeigt wird*/
+    let timepassed =
+      new Date().getTime() - this.lastHit; /* differenz in milisekunden*/
+    timepassed =
+      timepassed /
+      1000; /* umgerechnet das die differenz in sekunden angezeigt wird*/
     return timepassed < 1;
   }
 
@@ -78,23 +77,21 @@ class MovableObject extends DrawableObject {
   }
 
   playAnimation(images) {
-    let i =
-      this.currentImage %
-      images.length;                      /*       let i = 0 % 6;     */
-    let path = images[i];                 /* das 0te bild wird geladen */
+    let i = this.currentImage % images.length; /*       let i = 0 % 6;     */
+    let path = images[i]; /* das 0te bild wird geladen */
     this.img = this.imageCache[path];
-    this.currentImage++;              /* jetzt wird um eins erhöht  also zum 1ten bild usw */
+    this.currentImage++; /* jetzt wird um eins erhöht  also zum 1ten bild usw */
   }
 
   moveRight() {
-    this.x += this.speed;             /* += dann bewegung nach rechts */
+    this.x += this.speed; /* += dann bewegung nach rechts */
   }
 
   moveLeft() {
     this.x -= this.speed;
   }
 
-  jump(){
-    this. speedY = 35;
+  jump() {
+    this.speedY = 35;
   }
 }

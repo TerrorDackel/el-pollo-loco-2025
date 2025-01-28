@@ -22,7 +22,7 @@ class Character extends MovableObject {
     "imgs/2_character_pepe/1_idle/long_idle/I-17.png",
     "imgs/2_character_pepe/1_idle/long_idle/I-18.png",
     "imgs/2_character_pepe/1_idle/long_idle/I-19.png",
-    "imgs/2_character_pepe/1_idle/long_idle/I-20.png"
+    "imgs/2_character_pepe/1_idle/long_idle/I-20.png",
   ];
 
   IMAGES_WALKING = [
@@ -67,7 +67,7 @@ class Character extends MovableObject {
   world;
 
   walking_sound = new Audio("./audio/1_walking/walking.mp3");
-  // jumping_sound = new Audio('/audio/2_jump/maleShortJump.mp3');
+  jumping_sound = new Audio('/audio/2_jump/maleShortJump.mp3');
   // dead_sound = new Audio('/audio/9_lost/man dying.mp3');
 
   constructor() {
@@ -106,7 +106,7 @@ class Character extends MovableObject {
 
       if (this.world.keyboard.UP && !this.isAboveGround()) {
         this.jump();
-        // this.jumping_sound.play();
+        this.jumping_sound.play();
       }
 
       this.world.camera_x = -this.x + 100;
@@ -132,11 +132,11 @@ class Character extends MovableObject {
     }, 1000 / 60);
 
     setInterval(() => {
-        /* wenn er tot ist*/
+      /* wenn er tot ist*/
       if (this.isDead()) {
         this.playAnimation(this.IMAGES_DEAD); /* wenn energy 0 dann tot*/
       } else if (this.isHurt()) {
-      /* wenn er verletzt ist*/
+        /* wenn er verletzt ist*/
         this.playAnimation(this.IMAGES_HURT);
       } else if (this.isAboveGround()) {
         /* wenn sich der character über dem boden befindet (isAboveGround())  dann*/
@@ -156,5 +156,3 @@ class Character extends MovableObject {
     this.speedY = 28;
   }
 }
-
-

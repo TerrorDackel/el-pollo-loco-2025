@@ -35,9 +35,9 @@ window.addEventListener("keydown", (e) => {
     keyboard.D = true;
   }
 
-  // if (e.keyCode == 70) {
-  //   keyboard.F = true;
-  // }
+  if (e.keyCode == 70) {
+    keyboard.F = true;
+  }
   
   // if (e.keyCode == 18, 13) {
   //   keyboard.ENTER = true;
@@ -51,13 +51,13 @@ window.addEventListener("keydown", (e) => {
   //  keyboard.ESC = true;
   // }
 
-  // if (e.keyCode == ) {
-  //   keyboard. = true;
-  // }
+  if (e.keyCode == 74) {
+    keyboard.J = true;
+  }
   
-  // if (e.keyCode == ) {
-  //   keyboard. = true;
-  // }
+  if (e.keyCode == 78) {
+    keyboard.N = true;
+  }
 
   // if (e.keyCode == ) {
   //   keyboard. = true;
@@ -128,13 +128,13 @@ window.addEventListener("keyup", (e) => {
   //   keyboard.ESC = false;
   // }
 
-  //     if (e.keyCode == ) {
-  //   keyboard. = false;
-  // }
+      if (e.keyCode == 74) {
+    keyboard.J = false;
+  }
 
-  // if (e.keyCode == ) {
-  //   keyboard. = false;
-  // }
+  if (e.keyCode == 78) {
+    keyboard.N = false;
+  }
 
   // if (e.keyCode == ) {
   //   keyboard. = false;

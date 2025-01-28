@@ -59,9 +59,9 @@ window.addEventListener("keydown", (e) => {
     keyboard.N = true;
   }
 
-  // if (e.keyCode == ) {
-  //   keyboard. = true;
-  // }
+  if (e.keyCode == 45) {
+    keyboard.ZERO = true;
+  }
 
   // if (e.keyCode == ) {
   //  keyboard. = true;
@@ -136,11 +136,11 @@ window.addEventListener("keyup", (e) => {
     keyboard.N = false;
   }
 
-  // if (e.keyCode == ) {
-  //   keyboard. = false;
-  // }
+  if (e.keyCode == 45) {
+    keyboard.ZERO = false;
+  }
 
-  //     if (e.keyCode == ) {
+  //     if (e.keyCode == ) { 
   //   keyboard. = false;
   // }
 

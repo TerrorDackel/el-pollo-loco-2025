@@ -14,8 +14,8 @@ class ThrowableObjects extends MovableObject {
             this.speedy = 50;
             this.applyGravity();
             setInterval (() => {
-                  this.x += 40; /*wurfgeschwindigkeit*/
-            }, 60 ); /* wurfweite*/
+                  this.x += 40;
+            }, 60 ); 
       }
 
 

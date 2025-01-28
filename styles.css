@@ -1,15 +1,55 @@
+
+@font-face {
+    font-family: 'zabras';
+    src: url('./fonts/zabars.ttf') format('truetype');
+}
+
+.headline-gamename{
+  text-align: center;
+}
+
 body {
-      display: flex;
-      align-items: center;
-      flex-direction: column;
-            background-color: darkgreen;
+  background-color: black;
+  background-image: url('./imgs/5_background/desert.png');
+  background-size: cover;
+  /* background-overflow: visible; */
+  background-position: 50% 0;
+  font-family: 'zabras', Arial, Helvetica, sans-serif;
+  font-size: 50px;
+  letter-spacing: 4px;
+  color: rgb(59, 35, 7);
+  text-shadow: 8px 10px 6px rgba(255, 136, 0, 0.9);
+
+
 }
 
 canvas {
-      background-color: black;
-      
+  background-color: black;
+  display: block;
+  margin: auto;
+  padding: 0;
+  height: 480px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
+
+
+@media only screen and (max-width: 720px) {
+  canvas {
+    width: 100%;
+  }
+}
+
+@media only screen and (max-height: 480px) {
+  canvas {
+    height: 100vh;
+  }
+}
+
 .background-el-poll-loco {
-      display: flex;
-      background-color: darkgreen;
+  display: flex;
+  background-color: darkgreen;
 }

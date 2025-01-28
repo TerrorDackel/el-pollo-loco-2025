@@ -7,6 +7,7 @@ class World {
   camera_x = 0;
   statusBar = new StatusBar();
   throwableObjects = [];
+  throw_sound = new Audio("/audio/7_bottle/bottleClicking.mp3");
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
@@ -35,6 +36,7 @@ class World {
         this.character.y + 100
       );
       this.throwableObjects.push(bottle);
+      this.throw_sound.play();
     }
   }
 

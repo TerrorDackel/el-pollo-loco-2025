@@ -67,8 +67,9 @@ class Character extends MovableObject {
   world;
 
   walking_sound = new Audio("./audio/1_walking/walking.mp3");
-  jumping_sound = new Audio('/audio/2_jump/maleShortJump.mp3');
-  // dead_sound = new Audio('/audio/9_lost/man dying.mp3');
+  jumping_sound = new Audio("/audio/2_jump/maleShortJump.mp3");
+  dead_sound = new Audio("/audio/9_lost/man dying.mp3");
+  throw_sound = new Audio("/audio/7_bottle/bottleClicking.mp3", "/audio/7_bottle/smashed.mp3");
 
   constructor() {
     super().loadImage(this.IMAGES_WALKING[0]);

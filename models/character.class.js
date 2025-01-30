@@ -69,7 +69,7 @@ class Character extends MovableObject {
   walking_sound = new Audio("./audio/1_walking/walking.mp3");
   jumping_sound = new Audio("/audio/2_jump/maleShortJump.mp3");
   dead_sound = new Audio("/audio/9_lost/man dying.mp3");
-
+  hurt_sound = new Audio("./audio/10_hit/hit.mp3");
 
   constructor() {
     super().loadImage(this.IMAGES_WALKING[0]);
@@ -135,11 +135,21 @@ class Character extends MovableObject {
     setInterval(() => {
       /* wenn er tot ist*/
       if (this.isDead()) {
-        this.playAnimation(this.IMAGES_DEAD); /* wenn energy 0 dann tot*/
-        this.dead_sound.play();
+        // Wenn der Charakter tot ist
+        if (!this.deadAnimationPlayed) {
+          this.playAnimation(this.IMAGES_DEAD); // Dead-Animation abspielen
+          this.dead_sound.play();
+
+          // Stoppe die Dead-Animation nach 3 Sekunden
+          setTimeout(() => {
+            this.deadAnimationPlayed = true; // Setze die Flagge, um zu verhindern, dass es erneut abgespielt wird
+            this.showRestartPrompt(); // Zeige die Aufforderung zum Neustart
+          }, 1000); // 3 Sekunden (3000 Millisekunden)
+        }
       } else if (this.isHurt()) {
         /* wenn er verletzt ist*/
         this.playAnimation(this.IMAGES_HURT);
+        this.hurt_sound.play();
       } else if (this.isAboveGround()) {
         /* wenn sich der character über dem boden befindet (isAboveGround())  dann*/
         this.playAnimation(
@@ -153,6 +163,51 @@ class Character extends MovableObject {
       }
     }, 50);
   }
+
+ // Methode, um die Aufforderung zum Neustart anzuzeigen
+  showRestartPrompt() {
+    // Hier wird der Text angezeigt. 
+    // Zum Beispiel in einem HTML-Canvas oder div:
+    let prompt = document.createElement('div');
+    prompt.id = 'restartPrompt';
+    prompt.style.position = 'absolute';
+    prompt.style.top = '50%';
+    prompt.style.left = '50%';
+    prompt.style.transform = 'translate(-50%, -50%)';
+    prompt.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    prompt.style.color = 'white';
+    prompt.style.padding = '20px';
+    prompt.style.fontSize = '20px';
+    prompt.style.borderRadius = '10px';
+    prompt.innerHTML = 'Spiel Neustarten: J=Ja, N=Nein';
+
+    document.body.appendChild(prompt);
+
+    // Event-Listener für Tasteneingabe (J oder N)
+    document.addEventListener('keydown', (event) => {
+      if (event.key.toLowerCase() === 'j') {
+        this.restartGame();  // Spiel neu starten
+      } else if (event.key.toLowerCase() === 'n') {
+        this.quitGame();  // Spiel beenden
+      }
+    });
+  }
+
+  // Methode, um das Spiel neu zu starten
+  restartGame() {
+    // Logik zum Neustarten des Spiels (z. B. Level zurücksetzen, Charakter neu initialisieren)
+    console.log("Spiel wird neu gestartet...");
+    window.location.reload();  // Beispiel: einfach die Seite neu laden
+  }
+
+  // Methode, um das Spiel zu beenden
+  quitGame() {
+    console.log("Spiel beendet.");
+    // Hier kannst du eine andere Logik implementieren, um das Spiel zu beenden
+    // oder zu einem Hauptmenü zurückzukehren.
+    window.close();  // Beispiel: schließt das Fenster (funktioniert nur in bestimmten Browsern)
+  }
+
 
   jump() {
     this.speedY = 28;

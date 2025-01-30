@@ -30,7 +30,6 @@ class StatusBar extends DrawableObject {
   persentageCoins = 0;
   persentageBottles = 0;
 
-
   constructor() {
     super();
     this.loadImagesHealth(this.IMAGES_HEALTH);
@@ -47,19 +46,15 @@ class StatusBar extends DrawableObject {
     this.setPersentageBottles(0);
   }
 
-
   drawStatusBars(ctx) {
- 
     this.drawBar(ctx, this.imgHealth, this.x, this.y);
-    this.drawBar(ctx, this.imgCoins, this.x + 1.15 * this.width, this.y);   
-    this.drawBar(ctx, this.imgBottles, this.x + 2.25 * this.width, this.y); 
-   }
+    this.drawBar(ctx, this.imgCoins, this.x + 1.15 * this.width, this.y);
+    this.drawBar(ctx, this.imgBottles, this.x + 2.25 * this.width, this.y);
+  }
 
   drawBar(ctx, img, x, y) {
     ctx.drawImage(img, x, y, this.width, this.height);
   }
-
-
 
   setPersentageHealth(persentageHealth) {
     this.persentageHealth = persentageHealth;

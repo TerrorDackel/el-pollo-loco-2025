@@ -5,12 +5,7 @@ class Character extends MovableObject {
   y = 110;
   speed = 12;
 
-  // offset = {
-  //   top: 120,
-  //   left: 40,
-  //   right: 30,
-  //   bottom: 30,
-  // };
+
 
   IMAGES_LONG_IDLE = [
     "imgs/2_character_pepe/1_idle/long_idle/I-11.png",
@@ -135,16 +130,16 @@ class Character extends MovableObject {
     setInterval(() => {
       /* wenn er tot ist*/
       if (this.isDead()) {
-        // Wenn der Charakter tot ist
+        // wenn der charakter tot ist
         if (!this.deadAnimationPlayed) {
-          this.playAnimation(this.IMAGES_DEAD); // Dead-Animation abspielen
+          this.playAnimation(this.IMAGES_DEAD); // deadanimation abspielen
           this.dead_sound.play();
 
-          // Stoppe die Dead-Animation nach 3 Sekunden
+          // Stoppe die dead nnimation und sound nach 1 Sekunden
           setTimeout(() => {
             this.deadAnimationPlayed = true; // Setze die Flagge, um zu verhindern, dass es erneut abgespielt wird
-            this.showRestartPrompt(); // Zeige die Aufforderung zum Neustart
-          }, 1000); // 3 Sekunden (3000 Millisekunden)
+            this.showRestartPrompt(); 
+          }, 1000); // 1 Sekunden
         }
       } else if (this.isHurt()) {
         /* wenn er verletzt ist*/
@@ -163,8 +158,8 @@ class Character extends MovableObject {
       }
     }, 50);
   }
-
- // Methode, um die Aufforderung zum Neustart anzuzeigen
+  
+  // Methode, um die Aufforderung zum Neustart anzuzeigen
   showRestartPrompt() {
     // Hier wird der Text angezeigt. 
     // Zum Beispiel in einem HTML-Canvas oder div:
@@ -193,19 +188,18 @@ class Character extends MovableObject {
     });
   }
 
-  // Methode, um das Spiel neu zu starten
+  // Spiel neu zu starten
   restartGame() {
     // Logik zum Neustarten des Spiels (z. B. Level zurücksetzen, Charakter neu initialisieren)
     console.log("Spiel wird neu gestartet...");
     window.location.reload();  // Beispiel: einfach die Seite neu laden
   }
 
-  // Methode, um das Spiel zu beenden
+  //Spiel zu beenden zu startmenü zurück das fehlt aber noch
   quitGame() {
     console.log("Spiel beendet.");
-    // Hier kannst du eine andere Logik implementieren, um das Spiel zu beenden
-    // oder zu einem Hauptmenü zurückzukehren.
-    window.close();  // Beispiel: schließt das Fenster (funktioniert nur in bestimmten Browsern)
+    
+    window.close();  // muss ich noch ändern das dann das startmenü angezeigt wird.
   }
 
 

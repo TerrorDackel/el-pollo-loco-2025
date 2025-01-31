@@ -6,9 +6,11 @@ class Keyboard {
   SPACE = false;       /*flasche werfen*/
   D = false;
   F = false;               /*fullscreen ein/ aus */
-  P = false;                /*P und PAUSE = pause*/
-  PAUSE = false;
-  I = false;                /* information aufrufen unterm spiel muss auch pause aufgerufen werden*/
+  P = false;
+  PAUSE = false;                /*P und PAUSE = pause*/
+
+  INFO = false;                /* information aufrufen unterm spiel muss auch pause aufgerufen werden*/
+  MENU = false;            /* aufrufen des menüs*/
   ENTER = false;    
   E = false;
   ESC = false;

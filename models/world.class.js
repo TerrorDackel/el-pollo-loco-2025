@@ -8,6 +8,7 @@ class World {
   statusBar = new StatusBar();
   throwableObjects = [];
   throw_sound = new Audio("/audio/7_bottle/bottleClicking.mp3");
+  running = true;
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
@@ -23,10 +24,22 @@ class World {
   }
 
   run() {
-    setInterval(() => {
+    this.interval = setInterval(() => {
+      if (!this.running) return;
       this.checkCollision();
       this.checkThrowOjects();
     }, 300);
+  }
+
+  pauseGame() {
+    console.log("Spiel pausiert");
+    this.running = false;
+  }
+
+  resumeGame() {
+    console.log("Spiel wird fortgesetzt");
+    this.running = true;
+    this.draw();
   }
 
   checkThrowOjects() {
@@ -54,27 +67,19 @@ class World {
   }
 
   draw() {
-    /* die reihenfolge hier ist die layerreihenfolge!!! in dieserreihenfolge lest du die folien immer oben drauf*/
+    if (!this.running) return;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
     this.ctx.translate(this.camera_x, 0);
     this.addObjectsToMap(this.level.backgroundObjects);
-
     this.ctx.translate(-this.camera_x, 0);
-    // Zeichne alle Statusleisten
     this.statusBar.drawStatusBars(this.ctx);
-
     this.ctx.translate(this.camera_x, 0);
-
     this.addToMap(this.character);
     this.addObjectsToMap(this.level.clouds);
     this.addObjectsToMap(this.level.enemies);
     this.addObjectsToMap(this.throwableObjects);
-
     this.ctx.translate(-this.camera_x, 0);
-
-    let self =
-      this; /* draw wird immer wieder aufgerufen was die grafikkarte her gibt -  requestAnimationFrame*/
+    let self = this;
     requestAnimationFrame(function () {
       self.draw();
     });
@@ -90,10 +95,8 @@ class World {
     if (mo.otherDirection) {
       this.flipImage(mo);
     }
-
     mo.draw(this.ctx);
     mo.drawFrame(this.ctx);
-
     if (mo.otherDirection) {
       this.flipImageBack(mo);
     }

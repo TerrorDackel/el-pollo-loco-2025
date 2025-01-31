@@ -11,9 +11,19 @@ class World {
   running = true;
 
   constructor(canvas, keyboard) {
-    this.ctx = canvas.getContext("2d");
+    this.character = new Character();
+    this.level = level1;
     this.canvas = canvas;
+    this.ctx = canvas.getContext("2d");
     this.keyboard = keyboard;
+    this.statusBar = new StatusBar();
+    this.throwableObjects = [];
+    this.coins = [];
+    this.throw_sound = new Audio("/audio/7_bottle/bottleClicking.mp3");
+    this.coin_sound = new Audio("audio/11_coins/collectCoin.mp3");
+    this.running = true;
+    this.score = 0;
+    this.spawnCoins();
     this.draw();
     this.setWorld();
     this.run();
@@ -66,6 +76,31 @@ class World {
     });
   }
 
+  spawnCoins() {
+    for (let i = 0; i < 20; i++) {
+      let x = Math.random() * (2600 - 300) + 300;
+      let y = Math.random() * (300 - 150) + 150;
+      let coin = new Coin(x, y);
+      coin.animate();
+      this.coins.push(coin);
+    }
+  }
+
+  removeCoin(coin) {
+    this.coins = this.coins.filter((c) => c !== coin);
+  }
+
+  checkCollision() {
+    this.coins.forEach((coin) => {
+      if (this.character.isColliding(coin)) {
+        this.coin_sound.play();
+        this.score += 5;
+        this.statusBar.updateCoins(this.score);
+        coin.rotateAndDisappear(this);
+      }
+    });
+  }
+
   draw() {
     if (!this.running) return;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -114,3 +149,5 @@ class World {
     this.ctx.restore();
   }
 }
+
+

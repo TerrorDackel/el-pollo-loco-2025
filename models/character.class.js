@@ -125,6 +125,8 @@ class Character extends MovableObject {
       //     }
 
       /*--------------------------soundende wenn nicht nahe endboss----------------------------------------------------------------------------------------------------------------------------------------*/
+
+
     }, 1000 / 60);
 
     setInterval(() => {
@@ -159,7 +161,7 @@ class Character extends MovableObject {
     }, 50);
   }
   
-  // Methode, um die Aufforderung zum Neustart anzuzeigen
+  /* Methode, um die Aufforderung zum Neustart anzuzeigen*/
   showRestartPrompt() {
     // Hier wird der Text angezeigt. 
     // Zum Beispiel in einem HTML-Canvas oder div:

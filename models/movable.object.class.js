@@ -3,11 +3,10 @@ class MovableObject extends DrawableObject {
   otherDirection = false;
   speedY = 20;
   acceleration = 3;
-  energy = 100; /* höhe der grundenergy bzw Tp leben der mo hat*/
+  energy = 100;
   lastHit = 0;
 
   applyGravity() {
-    /* hier wird die gravitation eingebaut, damit alle movables nach unten fallen bzw beim springen wieder nach unten fallen*/
     setInterval(() => {
       if (this.isAboveGround() || this.speedY > 0) {
         this.y -= this.speedY;
@@ -20,18 +19,17 @@ class MovableObject extends DrawableObject {
     if (this instanceof ThrowableObjects) {
       return true;
     } else {
-      /* gibt uns feedback ob sich ein movable object auf dem boden befindet oder nicht*/
       return this.y < 100;
     }
   }
 
+  // Erweiterte Kollisionserkennung
   isColliding(mo) {
-    /* wenn kollision movableObject*/
     return (
+      this.x < mo.x + mo.width &&
       this.x + this.width > mo.x &&
-      this.y + this.height > mo.y &&
-      this.x < mo.x &&
-      this.y < mo.y + mo.height
+      this.y < mo.y + mo.height &&
+      this.y + this.height > mo.y
     );
   }
 
@@ -45,11 +43,8 @@ class MovableObject extends DrawableObject {
   }
 
   isHurt() {
-    let timepassed =
-      new Date().getTime() - this.lastHit; /* differenz in milisekunden*/
-    timepassed =
-      timepassed /
-      1000; /* umgerechnet das die differenz in sekunden angezeigt wird*/
+    let timepassed = new Date().getTime() - this.lastHit;
+    timepassed = timepassed / 1000; // Umrechnung in Sekunden
     return timepassed < 1;
   }
 
@@ -57,34 +52,23 @@ class MovableObject extends DrawableObject {
     return this.energy == 0;
   }
 
-  /**
-   *
-   *  @param {Array} arr - ['img/image1.png', 'img/image2.png', ... ]
-   */
   loadImages(arr) {
-    /* arr ist array hier laden wir die bilder des characters pepe rein*/
-
     arr.forEach((path) => {
-      /* arr ist abkürzung für array*/
-      /* schleife damit alle bilder im arr von function loadImages angezeigt werden*/
-      let img =
-        new Image(); /* hier lege wir eine neue variable an mit einem bild*/
-      img.src =
-        path; /* hier laden wir das bild in das diese new Image hinein */
-      this.imageCache[path] =
-        img; /* image cache wird geupdatet hier sind die bilder reingeladen*/
+      let img = new Image();
+      img.src = path;
+      this.imageCache[path] = img;
     });
   }
 
   playAnimation(images) {
-    let i = this.currentImage % images.length; /*       let i = 0 % 6;     */
-    let path = images[i]; /* das 0te bild wird geladen */
+    let i = this.currentImage % images.length;
+    let path = images[i];
     this.img = this.imageCache[path];
-    this.currentImage++; /* jetzt wird um eins erhöht  also zum 1ten bild usw */
+    this.currentImage++;
   }
 
   moveRight() {
-    this.x += this.speed; /* += dann bewegung nach rechts */
+    this.x += this.speed;
   }
 
   moveLeft() {

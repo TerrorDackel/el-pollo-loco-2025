@@ -1,57 +1,65 @@
 class World {
-  character = new Character();
-  level = level1;
+  /* initialisierung der wichtigen objekte */
+  character = new Character(); /* erstelle den charakter */
+  level = level1; /* lade das level */
   canvas;
   ctx;
+  coin;
   keyboard;
-  camera_x = 0;
-  statusBar = new StatusBar();
-  throwableObjects = [];
-  throw_sound = new Audio("/audio/7_bottle/bottleClicking.mp3");
-  running = true;
+  camera_x = 0; /* kamera-position */
+  statusBar = new StatusBar(); /* erstelle die statusbar */
+  throwableObjects = []; /* array für die wurfobjekte */
+  throw_sound = new Audio(
+    "/audio/7_bottle/bottleClicking.mp3"
+  ); /* lade sound für das werfen */
+  running = true; /* gibt an, ob das spiel läuft */
+  coins = []; /* array für die münzen */
 
   constructor(canvas, keyboard) {
-    this.character = new Character();
-    this.level = level1;
+    /* speichert das canvas und die tastatureingaben */
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d");
     this.keyboard = keyboard;
     this.statusBar = new StatusBar();
     this.throwableObjects = [];
-    this.coins = [];
     this.throw_sound = new Audio("/audio/7_bottle/bottleClicking.mp3");
     this.coin_sound = new Audio("audio/11_coins/collectCoin.mp3");
     this.running = true;
-    this.score = 0;
-    this.spawnCoins();
-    this.draw();
-    this.setWorld();
-    this.run();
+    this.score = 0; /* initialisiert den punktestand */
+    this.spawnCoins(); /* ruft die funktion auf, um münzen zu erstellen */
+    this.draw(); /* startet das rendern */
+    this.setWorld(); /* verbindet den charakter mit der welt */
+    this.run(); /* startet die spielmechaniken */
   }
 
+  /* setzt die referenz der welt für den charakter */
   setWorld() {
     this.character.world = this;
   }
 
+  /* startet das hauptspiel-intervall */
   run() {
     this.interval = setInterval(() => {
       if (!this.running) return;
-      this.checkCollision();
-      this.checkThrowOjects();
+      this.checkCollision(); /* prüft kollisionsereignisse */
+      this.checkThrowOjects(); /* prüft, ob ein wurfobjekt geworfen wurde */
     }, 300);
   }
 
+  /* pausiert das spiel */
   pauseGame() {
     console.log("Spiel pausiert");
     this.running = false;
   }
 
+  /* setzt das spiel fort */
   resumeGame() {
     console.log("Spiel wird fortgesetzt");
     this.running = true;
     this.draw();
   }
 
+  /* überprüft, ob der spieler eine flasche wirft */
   checkThrowOjects() {
     if (this.keyboard.SPACE) {
       let bottle = new ThrowableObjects(
@@ -63,10 +71,11 @@ class World {
     }
   }
 
+  /* überprüft kollisionen mit feinden und münzen */
   checkCollision() {
     this.level.enemies.forEach((enemy) => {
       if (this.character.isColliding(enemy)) {
-        this.character.hit();
+        this.character.hit(); /* reduziert die lebensenergie des charakters */
         this.statusBar.setPersentageHealth(this.character.energy);
         console.log(
           "character kollidiert, energie beträgt noch",
@@ -74,33 +83,31 @@ class World {
         );
       }
     });
-  }
 
-  spawnCoins() {
-    for (let i = 0; i < 20; i++) {
-      let x = Math.random() * (2600 - 300) + 300;
-      let y = Math.random() * (300 - 150) + 150;
-      let coin = new Coin(x, y);
-      coin.animate();
-      this.coins.push(coin);
-    }
-  }
-
-  removeCoin(coin) {
-    this.coins = this.coins.filter((c) => c !== coin);
-  }
-
-  checkCollision() {
-    this.coins.forEach((coin) => {
+    /* überprüft kollisionen mit münzen */
+    this.coins.forEach((coin, index) => {
       if (this.character.isColliding(coin)) {
-        this.coin_sound.play();
-        this.score += 5;
-        this.statusBar.updateCoins(this.score);
-        coin.rotateAndDisappear(this);
+        this.coin_sound.play(); /* spielt den münz-sound ab */
+        this.score += 5; /* erhöht den punktestand */
+        this.statusBar.updateCoins(this.score); /* aktualisiert die anzeige */
+        this.coins.splice(index, 1); /* entfernt die münze aus dem array */
       }
     });
   }
 
+  /* erstellt zufällig positionierte münzen */
+  spawnCoins() {
+    for (let i = 0; i < 20; i++) {
+      let x = 100 + Math.random() * (3000 - 2600); /* zufällige x-position */
+      let y = 150 + Math.random() * (300 - 150); /* zufällige y-position */
+      let coin = new Coins(); /* erstellt eine neue münze */
+      coin.x = x; /* setzt die x-position */
+      coin.y = y; /* setzt die y-position */
+      this.coins.push(coin); /* fügt die münze dem array hinzu */
+    }
+  }
+
+  /* zeichnet das gesamte spielobjekte auf das canvas */
   draw() {
     if (!this.running) return;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -113,6 +120,7 @@ class World {
     this.addObjectsToMap(this.level.clouds);
     this.addObjectsToMap(this.level.enemies);
     this.addObjectsToMap(this.throwableObjects);
+    this.addObjectsToMap(this.coins); /* fügt die münzen hinzu */
     this.ctx.translate(-this.camera_x, 0);
     let self = this;
     requestAnimationFrame(function () {
@@ -120,23 +128,30 @@ class World {
     });
   }
 
+  /* fügt mehrere objekte zur zeichnungsliste hinzu */
   addObjectsToMap(objects) {
     objects.forEach((o) => {
       this.addToMap(o);
     });
   }
 
+  /* zeichnet ein einzelnes objekt auf das canvas */
   addToMap(mo) {
     if (mo.otherDirection) {
       this.flipImage(mo);
     }
     mo.draw(this.ctx);
-    mo.drawFrame(this.ctx);
+    if (mo.drawFrame) {
+      mo.drawFrame(
+        this.ctx
+      ); /* stellt sicher, dass keine fehler durch fehlende drawFrame-methode auftreten */
+    }
     if (mo.otherDirection) {
       this.flipImageBack(mo);
     }
   }
 
+  /* spiegelt ein objekt horizontal */
   flipImage(mo) {
     this.ctx.save();
     this.ctx.translate(mo.width, 0);
@@ -144,10 +159,9 @@ class World {
     mo.x = mo.x * -1;
   }
 
+  /* setzt das objekt nach dem spiegeln zurück */
   flipImageBack(mo) {
     mo.x = mo.x * -1;
     this.ctx.restore();
   }
 }
-
-

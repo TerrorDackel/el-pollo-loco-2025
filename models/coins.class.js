@@ -16,8 +16,8 @@ class Coins {
   /* eigenschaften der münze */
   x = 150;
   y = 150;
-  width = 30;
-  height = 30;
+  width = 25;
+  height = 25;
   rotation = 0;
   currentImage = 0;
   images = [];
@@ -57,7 +57,7 @@ class Coins {
         this.x + this.width / 2,
         this.y + this.height / 2
       ); /* zentriert das bild */
-      ctx.rotate(this.rotation); /* dreht das bild */
+
       ctx.drawImage(
         this.images[this.currentImage],
         -this.width / 2,
@@ -75,44 +75,11 @@ class Coins {
       if (this.loaded && this.images.length > 0) {
         this.currentImage = (this.currentImage + 1) % this.images.length;
       }
-    }, 100);
+    }, 200);
   }
 
-  /* rotiert die münze und entfernt sie nach einer kompletten umdrehung */
-  rotateAndDisappear(world) {
-    let interval = setInterval(() => {
-      this.rotation += 0.2; /* erhöht die rotation */
-      if (this.rotation >= Math.PI * 2) {
-        clearInterval(
-          interval
-        ); /* stoppt die rotation nach einer kompletten umdrehung */
-        world.removeCoin(this); /* entfernt die münze aus der welt */
-      }
-    }, 50);
-  }
 
-  /* bewegt die münze nach rechts */
-  moveRight() {
-    this.x += this.speed;
-  }
-
-  /* bewegt die münze nach links */
-  moveLeft() {
-    this.x -= this.speed;
-  }
-
-  /* schwerkraft für die münze */
-  applyGravity() {
-    setInterval(() => {
-      if (this.y < 100 || this.speedY > 0) {
-        this.y -= this.speedY; /* bewegt die münze nach unten */
-        this.speedY -=
-          this.acceleration; /* verringert die geschwindigkeit nach unten */
-      }
-    }, 1000 / 25); /* simuliert die schwerkraft */
-  }
-
-  /* prüft, ob die münze mit einem anderen objekt kollidiert */
+  /* prüft ob die münze mit character kollidiert */
   isColliding(otherObject) {
     return (
       this.x < otherObject.x + otherObject.width &&

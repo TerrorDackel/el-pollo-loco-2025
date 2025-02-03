@@ -18,7 +18,7 @@ body {
   font-size: 50px;
   letter-spacing: 4px;
   color: rgb(59, 35, 7);
-  text-shadow: 8px 10px 6px rgba(255, 136, 0, 0.9);
+  text-shadow: 1px 1px 6px rgba(255, 136, 0, 0.9);
 
 
 }
@@ -35,6 +35,77 @@ canvas {
   left: 0;
   right: 0;
   border-radius: 30px;
+}
+
+.menu-button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    font-size: 18px;
+    font-weight: bold;
+    background: #f7c25f;
+    color: black;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.menu-button:hover {
+    background: #ffaa00;
+    cursor: pointer;
+ transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transform-style: preserve-3d; /* Dies erlaubt eine 3D-Rotation */
+  perspective: 1000px; /* Die Perspektive für den 3D-Effekt */
+}
+
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* stellt sicher  das es !über! ollem liegt */
+}
+
+.overlay-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+    width: 600px;
+}
+
+.header-game-elpolloloco {
+    font-size: 60px;
+  color:#ffaa00;
+  text-shadow: #ffaa00;
+
+}
+
+.header-game-controll {
+  font-size: 40px;
+  color: #f5d8a2;
+}
+
+.game-controll-txt {
+  font-size: 20px;
+  color: #f7c25f;
+}
+
+.game-controll-back {
+  font-size: 20px;
+  color: #f7c25f;
 }
 
 

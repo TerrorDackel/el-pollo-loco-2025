@@ -1,5 +1,7 @@
 class ThrowableObjects extends MovableObject {
 
+
+
       constructor(x, y) {
             super().loadImage('./imgs/7_statusbars/3_icons/icon_salsa_bottle.png');
             this.x = x;
@@ -17,8 +19,6 @@ class ThrowableObjects extends MovableObject {
                   this.x += 40;
             }, 60 ); 
       }
-
-
 
 
 

@@ -69,13 +69,6 @@ class StatusBar extends DrawableObject {
     this.imgHealth = this.imageCacheHealth[pathHealth];
   }
 
-  /* aktualisiert die statusleiste für flaschen */
-  setPersentageBottles(persentageBottles) {
-    this.persentageBottles = persentageBottles;
-    let pathBottles = this.IMAGES_BOTTLESBAR[this.resolveImageBottlesIndex()];
-    this.imgBottles = this.imageCacheBottles[pathBottles];
-  }
-
   resolveImageHealthIndex() {
     if (this.persentageHealth == 100) {
       return 5;
@@ -88,22 +81,6 @@ class StatusBar extends DrawableObject {
     } else if (this.persentageHealth >= 20) {
       return 1;
     } else if (this.persentageHealth >= 0) {
-      return 0;
-    }
-  }
-
-  resolveImageBottlesIndex() {
-    if (this.persentageBottles == 100) {
-      return 5;
-    } else if (this.persentageBottles >= 80) {
-      return 4;
-    } else if (this.persentageBottles >= 60) {
-      return 3;
-    } else if (this.persentageBottles >= 40) {
-      return 2;
-    } else if (this.persentageBottles >= 20) {
-      return 1;
-    } else if (this.persentageBottles >= 0) {
       return 0;
     }
   }
@@ -125,6 +102,22 @@ class StatusBar extends DrawableObject {
     if (this.amountCoins >= 12) return 3;
     if (this.amountCoins >= 8) return 2;
     if (this.amountCoins >= 4) return 1;
+    return 0;
+  }
+
+  /* aktualisiert die statusleiste für flaschen */
+  setPersentageBottles(amountBottles) {
+    this.amountBottles = amountBottles;
+    let pathBottles = this.IMAGES_BOTTLESBAR[this.resolveImageBottlesIndex()];
+    this.imgBottles = this.imageCacheBottles[pathBottles];
+  }
+
+  resolveImageBottlesIndex() {
+    if (this.amountBottles >= 10) return 5;
+    if (this.amountBottles >= 8) return 4;
+    if (this.amountBottles >= 6) return 3;
+    if (this.amountBottles >= 4) return 2;
+    if (this.amountBottles >= 2) return 1;
     return 0;
   }
 }

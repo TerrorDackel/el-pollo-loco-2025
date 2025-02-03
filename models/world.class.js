@@ -28,7 +28,9 @@ class World {
     this.coin_sound = new Audio("audio/11_coins/collectCoin.mp3");
     this.running = true;
     this.score = 0; /* initialisiert den punktestand */
+    this.bottles = [];
     this.spawnCoins(); /* ruft die funktion auf, um münzen zu erstellen */
+    this.spawnBottles(); /* ruft die funktion auf um flaschen zu erstellen */
     this.draw(); /* startet das rendern */
     this.setWorld(); /* verbindet den charakter mit der welt */
     this.run(); /* startet die spielmechaniken */
@@ -128,6 +130,8 @@ class World {
     this.addObjectsToMap(this.level.enemies);
     this.addObjectsToMap(this.throwableObjects);
     this.addObjectsToMap(this.coins); /* fügt die münzen hinzu */
+    // console.log("Bottles im Spiel:", this.bottles);
+    this.addObjectsToMap(this.bottles); /* fügt die flaschen hinzu */
     this.ctx.translate(-this.camera_x, 0);
     let self = this;
     requestAnimationFrame(function () {
@@ -137,9 +141,8 @@ class World {
 
   /* fügt mehrere objekte zur zeichnungsliste hinzu */
   addObjectsToMap(objects) {
-    objects.forEach((o) => {
-      this.addToMap(o);
-    });
+    if (!objects || objects.length === 0) return; // Verhindert Fehler, falls Array nicht existiert
+    objects.forEach((o) => this.addToMap(o));
   }
 
   /* zeichnet ein einzelnes objekt auf das canvas */
@@ -170,5 +173,17 @@ class World {
   flipImageBack(mo) {
     mo.x = mo.x * -1;
     this.ctx.restore();
+  }
+
+  spawnBottles() {
+    this.bottles = []; // Leeres Array für Flaschen
+    for (let i = 0; i < 10; i++) {
+      let x = 200 + Math.random() * 3000; // Zufällige X-Position
+      let y = 300; // Flaschen liegen auf dem Boden
+      let bottle = new Bottle(); // Neues Flaschen-Objekt
+      bottle.x = x;
+      bottle.y = y;
+      this.bottles.push(bottle); // Flasche in Array speichern
+    }
   }
 }

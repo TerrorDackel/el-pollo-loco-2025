@@ -150,6 +150,18 @@ class Character extends MovableObject {
     });
   }
 
+  checkForBottleCollision() {
+    if (!this.world || !this.world.bottles) return; // Falls `world` oder `bottles` nicht existieren, abbrechen
+
+    this.world.bottles.forEach((bottle, index) => {
+      if (this.isColliding(bottle)) {
+        this.world.bottles.splice(index, 1); // Flasche aus dem Array entfernen
+        this.world.collectedBottles++; // Anzahl der gesammelten Flaschen erhöhen
+        this.world.statusBar.setPersentageBottles(this.world.collectedBottles); // StatusBar aktualisieren
+      }
+    });
+  }
+
   /* überprüft kollisionen mit gegnern */
   checkForEnemyCollisions() {
     if (!this.world || !this.world.enemies) return;
@@ -158,7 +170,7 @@ class Character extends MovableObject {
       if (this.isColliding(enemy)) {
         this.hit();
         this.world.statusBar.setPersentageHealth(this.energy);
-        console.log("❌ Kollision mit Feind! Energie: ", this.energy);
+        console.log("Kollision mit Feind! Energie: ", this.energy);
       }
     });
   }
@@ -167,6 +179,7 @@ class Character extends MovableObject {
   handleCollisions() {
     this.checkForCoinCollision();
     this.checkForEnemyCollisions();
+    this.checkForBottleCollision();
   }
 
   /* zeigt einen neustart-dialog an */
@@ -181,12 +194,26 @@ class Character extends MovableObject {
             padding: 20px; font-size: 20px; border-radius: 10px;
         `,
     });
+
     document.body.appendChild(prompt);
-    document.addEventListener("keydown", (e) =>
-      e.key.toLowerCase() === "j"
-        ? this.restartGame()
-        : e.key.toLowerCase() === "n" && this.quitGame()
-    );
+
+    /* falls ein eventListener existiert erst entfernen*/
+    document.removeEventListener("keydown", this.handleRestartEvent);
+
+    // neuer eventListener registrieren
+    let self = this;
+
+    this.handleRestartEvent = function (event) {
+      if (event.key.toLowerCase() === "j") self.restartGame();
+      else if (event.key.toLowerCase() === "n") self.quitGame();
+    };
+
+    document.addEventListener("keydown", this.handleRestartEvent);
+  }
+
+  restartGame() {
+    console.log("🔄 Spiel wird neu gestartet...");
+    window.location.reload(); // Seite neuladen
   }
 
   updateCamera() {
@@ -196,6 +223,17 @@ class Character extends MovableObject {
   handleWalkingAnimation() {
     if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
       this.playAnimation(this.IMAGES_WALKING);
+    }
+  }
+
+  handleDeath() {
+    if (!this.deadAnimationPlayed) {
+      this.playAnimation(this.IMAGES_DEAD);
+      this.dead_sound.play();
+      setTimeout(() => {
+        this.deadAnimationPlayed = true;
+        this.showRestartPrompt();
+      }, 1000);
     }
   }
 

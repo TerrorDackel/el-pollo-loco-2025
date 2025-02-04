@@ -27,6 +27,7 @@ class Coins {
 
   /* speichert versprechen für das laden der bilder */
   loadImagePromises = [];
+  coinCollect_sound = new Audio("/audio/11_coins/collectCoin.mp3");
 
   constructor() {
     /* lade die bilder und speichere die promises */
@@ -57,7 +58,6 @@ class Coins {
         this.x + this.width / 2,
         this.y + this.height / 2
       ); /* zentriert das bild */
-
       ctx.drawImage(
         this.images[this.currentImage],
         -this.width / 2,
@@ -78,15 +78,24 @@ class Coins {
     }, 200);
   }
 
-
-  /* prüft ob die münze mit character kollidiert */
-  isColliding(otherObject) {
+  /* prüft ob die münze kollidiert */
+  isColliding(collectableObject) {
     return (
-      this.x < otherObject.x + otherObject.width &&
-      this.x + this.width > otherObject.x &&
-      this.y < otherObject.y + otherObject.height &&
-      this.y + this.height > otherObject.y
+      this.x + this.width > collectableObject.x &&
+      this.x < collectableObject.x + collectableObject.width &&
+      this.y + this.height > collectableObject.y &&
+      this.y < collectableObject.y + collectableObject.height
     );
+  }
+
+  checkCollisionCoins() {
+    this.coins.forEach((coin, index) => {
+      if (this.character.isColliding(coin)) {
+        SoundManager.playSound("coin");
+        this.coins.splice(index, 1);
+        this.statusBar.setPersentageCoins(this.score++);
+      }
+    });
   }
 
   /* stellt sicher, dass keine fehler durch fehlende drawFrame-methode auftreten */

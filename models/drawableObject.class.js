@@ -1,9 +1,13 @@
-class DrawableObject  {
+class DrawableObject {
   x = 120;
   y = 280;
   height = 200;
   width = 100;
   img;
+  offsetTop = 40;
+  offsetBottom = -20;
+  offsetRight = 40;
+  offsetLeft = 15;
 
   imageCacheHealth = {};
   imageCacheCoins = {};
@@ -16,7 +20,7 @@ class DrawableObject  {
     this.img.src = path;
   }
 
-    loadImages(arr) {
+  loadImages(arr) {
     arr.forEach((path) => {
       let img = new Image();
       img.src = path;
@@ -24,8 +28,11 @@ class DrawableObject  {
     });
   }
 
-
   draw(ctx) {
+    if (!this.img) {
+      console.error(" drawImage() Fehler: Kein Bild geladen für", this);
+      return; // Verhindert das Zeichnen eines ungültigen Bildes
+    }
     ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
   }
 

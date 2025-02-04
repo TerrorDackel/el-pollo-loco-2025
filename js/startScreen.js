@@ -12,20 +12,28 @@ function showStartScreen() {
         ">
             <h2 class="header-game-controll">Willkommen bei:</h2>
             <h1 class="header-game-elpolloloco"> El Pollo Loco</h1>
-            <button class="menu-button" onclick="startGame()">Spiel starten</button>
-            <button class="menu-button" onclick="showRules()">Spielregeln</button>
-            <button class="menu-button" onclick="showImpressum()">Impressum</button>
+            <button class="menu-button" onclick="startGame()">▶️ Spiel starten</button>
+            <button class="menu-button" onclick="showRules()">🕹️ Spielregeln</button>
+            <button class="menu-button" onclick="showImpressum()">ℹ️ Impressum</button>
         </div>
     `;
   document.body.appendChild(startScreen);
 }
 
-/* startscreen weg spiel läuft*/
 function startGame() {
-  document.getElementById("startScreen").remove();
-  init();
+  let startScreen = document.getElementById("startScreen");
+
+  if (startScreen) {
+    startScreen.classList.add("fade-out"); // Sanft ausblenden
+    setTimeout(() => {
+      startScreen.remove(); // Danach endgültig löschen
+      init(); // Spiel starten
+    }, 1000); // 1000ms (1 Sekunde) für langsameres Fade-Out
+  }
 }
 
+
+ 
 /* spielregeln erscheinen */
 function showRules() {
       // console.log(" Spielregelnbutton wurde geklickt!");
@@ -35,8 +43,9 @@ function showRules() {
         <p class="game-controll-txt">➡️ Pfeil rechts: Pepe läuft nach rechts.</p>
         <p class="game-controll-txt">⬆️ Pfeil oben: Pepe springt.</p>
         <p class="game-controll-txt">SPACE: Pepe wirft eine Flasche.</p>     
-       <p class="game-controll-txt">P: Pause starten, Pause beenden.</p>
-         <p  class="game-controll-back">Klicke oder drücke SPACE, um zurückzukehren.</p>
+        <p class="game-controll-txt">🔇T= Musik aus,🔊 Z=Musik an.</p>     
+       <p class="game-controll-txt">⏯️ P= Pause starten, P= Pause beenden.</p>
+         <p  class="game-controll-back">Klicke irgendwo hin, um zurück zu kehren.</p>
     `);
 }
 
@@ -46,59 +55,31 @@ function showImpressum() {
   showOverlay(`
         <h2 class="header-game-controll">Impressum</h2>
         <p  class="game-controll-txt">Kreiert von <b>TerrorDackel</b> - 2025</p>
-        <p  class="game-controll-back">Klicke oder drücke SPACE, um zurückzukehren.</p>
+        <p  class="game-controll-back">Klicke irgendwo hin, um zurück zu kehren.</p>
     `);
 }
 
 /* erstellt ein overlay für keyboardregeln und  impressum*/
 function showOverlay(content) {
-      // console.log("overlay wird erstellt");
-  let overlay = document.createElement("div");
-  overlay.id = "overlay";
-  overlay.innerHTML = `
-        <div class="overlay-content">${content}</div>
-    `;
-  document.body.appendChild(overlay);
-      console.log("✅ Overlay zum DOM hinzugefügt:", document.getElementById("overlay"));
-
-  document.addEventListener("keydown", closeOverlay);
-  document.addEventListener("click", closeOverlay);
-}
-
-function showOverlay(content) {
 //   console.log("overlay wird erstellt");
-
   let overlay = document.createElement("div");
   overlay.id = "overlay";
   overlay.innerHTML = `<div class="overlay-content">${content}</div>`;
   document.body.appendChild(overlay);
-
-  console.log(
-    "overlay wird zum DOM hinzugefüg",
-    document.getElementById("overlay")
-  );
-
-  /*verhindert direktes schließen durch click*/
   setTimeout(() => {
-    document.addEventListener("keydown", closeOverlay);
     document.addEventListener("click", closeOverlay);
   }, 200);
 
   function closeOverlay(event) {
-    console.log(" overlay schließt durch:", event.type, event.key);
+    // console.log(" overlay schließt durch:", event.type, event.key);
 
-    if (event.key === " " || event.type === "click") {
+    if (event.type === "click") {
         let overlay = document.getElementById("overlay");
-
         if (overlay) {
-            console.log("des overlay wird entfernt");
+            // console.log("des overlay wird entfernt");
             overlay.remove();
-        } else {
-            console.log("es is kein overlay da was man löschen kon");
         }
-
         // EventListener sicher entfernen, damit sie sich nicht stapeln
-        document.removeEventListener("keydown", closeOverlay);
         document.removeEventListener("click", closeOverlay);
     }
 }

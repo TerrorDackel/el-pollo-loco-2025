@@ -1,5 +1,5 @@
 class StatusBar extends DrawableObject {
-  /* speichert die pfade zu den bildern für die statusleiste von leben, münzen und flaschen */
+  /* speichert die bildpfade für die statusleisten von leben, münzen und flaschen */
   IMAGES_HEALTHBAR = [
     "./imgs/7_statusbars/1_statusbar/2_statusbar_health/blue/0.png",
     "./imgs/7_statusbars/1_statusbar/2_statusbar_health/blue/20.png",
@@ -30,24 +30,38 @@ class StatusBar extends DrawableObject {
   /* speichert die aktuellen werte für leben, münzen und flaschen */
   persentageHealth = 100;
   persentageBottles = 0;
-  MAX_BOTTLES = 10;
   amountCoins = 0;
+  amountBottles = 0;
 
+  /* initialisiert die statusbar mit allen bildern und setzt standardwerte */
   constructor() {
     super();
-    this.loadImagesHealth(this.IMAGES_HEALTHBAR);
-    this.loadImagesCoins(this.IMAGES_COINSBAR);
-    this.setAmountCoins(0);
-    this.loadImagesBottles(this.IMAGES_BOTTLESBAR);
+    this.loadImages(this.IMAGES_HEALTHBAR, "health");
+    this.loadImages(this.IMAGES_COINSBAR, "coins");
+    this.loadImages(this.IMAGES_BOTTLESBAR, "bottles");
 
+    /* setzt position und größe der statusbar */
     this.x = 30;
     this.y = 0;
     this.height = 60;
     this.width = 200;
 
+    /* initialisiert die standardwerte */
     this.setPersentageHealth(100);
     this.setPersentageCoins(0);
     this.setPersentageBottles(0);
+  }
+
+  /* lädt die bilder für eine bestimmte kategorie (leben, münzen, flaschen) */
+  loadImages(imageArray, category) {
+    imageArray.forEach((path) => {
+      let img = new Image();
+      img.src = path;
+
+      if (category === "health") this.imageCacheHealth[path] = img;
+      if (category === "coins") this.imageCacheCoins[path] = img;
+      if (category === "bottles") this.imageCacheBottles[path] = img;
+    });
   }
 
   /* zeichnet die statusleisten für leben, münzen und flaschen */
@@ -65,59 +79,41 @@ class StatusBar extends DrawableObject {
   /* aktualisiert die statusleiste für leben */
   setPersentageHealth(persentageHealth) {
     this.persentageHealth = persentageHealth;
-    let pathHealth = this.IMAGES_HEALTHBAR[this.resolveImageHealthIndex()];
-    this.imgHealth = this.imageCacheHealth[pathHealth];
+    let index = this.resolveIndex(persentageHealth);
+    this.imgHealth = this.imageCacheHealth[this.IMAGES_HEALTHBAR[index]];
   }
 
-  resolveImageHealthIndex() {
-    if (this.persentageHealth == 100) {
-      return 5;
-    } else if (this.persentageHealth >= 80) {
-      return 4;
-    } else if (this.persentageHealth >= 60) {
-      return 3;
-    } else if (this.persentageHealth >= 40) {
-      return 2;
-    } else if (this.persentageHealth >= 20) {
-      return 1;
-    } else if (this.persentageHealth >= 0) {
-      return 0;
-    }
-  }
-
+  /* aktualisiert die statusleiste für münzen */
   setPersentageCoins(amountCoins) {
     this.amountCoins = amountCoins;
-    let pathCoins = this.IMAGES_COINSBAR[this.resolveImageCoinsbarIndex()];
-    this.imgCoins = this.imageCacheCoins[pathCoins]; // Bild für die Münzleiste setzen
+    let index = this.resolveIndex(amountCoins);
+    this.imgCoins = this.imageCacheCoins[this.IMAGES_COINSBAR[index]];
   }
 
+  /* setzt die anzahl der münzen in der statusbar */
   setAmountCoins(amountCoins) {
-    this.amountCoins = amountCoins;
-    this.setPersentageCoins(amountCoins); // Aktualisiert die Anzeige der Münzen
-  }
-
-  resolveImageCoinsbarIndex() {
-    if (this.amountCoins >= 20) return 5;
-    if (this.amountCoins >= 16) return 4;
-    if (this.amountCoins >= 12) return 3;
-    if (this.amountCoins >= 8) return 2;
-    if (this.amountCoins >= 4) return 1;
-    return 0;
+    this.setPersentageCoins(amountCoins);
   }
 
   /* aktualisiert die statusleiste für flaschen */
   setPersentageBottles(amountBottles) {
+    if (isNaN(amountBottles) || amountBottles === undefined) {
+      console.error("fehler amountBottles ist ungültig", amountBottles);
+      return;
+    }
     this.amountBottles = amountBottles;
-    let pathBottles = this.IMAGES_BOTTLESBAR[this.resolveImageBottlesIndex()];
-    this.imgBottles = this.imageCacheBottles[pathBottles];
+    let index = this.resolveIndex(amountBottles);
+    this.imgBottles = this.imageCacheBottles[this.IMAGES_BOTTLESBAR[index]];
+    console.log("flaschen in statusbar", this.amountBottles);
   }
 
-  resolveImageBottlesIndex() {
-    if (this.amountBottles >= 10) return 5;
-    if (this.amountBottles >= 8) return 4;
-    if (this.amountBottles >= 6) return 3;
-    if (this.amountBottles >= 4) return 2;
-    if (this.amountBottles >= 2) return 1;
+  /* berechnet den index für das passende bild in der statusleiste */
+  resolveIndex(value) {
+    if (value >= 100 || value >= 10) return 5;
+    if (value >= 80 || value >= 8) return 4;
+    if (value >= 60 || value >= 6) return 3;
+    if (value >= 40 || value >= 4) return 2;
+    if (value >= 20 || value >= 2) return 1;
     return 0;
   }
 }

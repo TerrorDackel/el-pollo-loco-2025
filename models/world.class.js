@@ -1,42 +1,35 @@
 class World {
-  /* initialisierung der wichtigen objekte */
-  character = new Character(); /* erstelle den charakter */
-  level = level1; /* lade das level */
+  /* speichert alle wichtigen objekte für die spielwelt */
+  character = new Character(); /* erstellt den charakter */
+  level = level1; /* lädt das level */
   canvas;
   ctx;
   keyboard;
-  camera_x = 0; /* kamera-position */
-  statusBar = new StatusBar(); /* erstelle die statusbar */
-  throwableObjects = []; /* array für die wurfobjekte */
-  throw_sound = new Audio(
-    "/audio/7_bottle/bottleClicking.mp3"
-  ); /* lade sound für das werfen */
-  running = true; /* gibt an, ob das spiel läuft */
-  coins = []; /* array für die münzen */
-  MAX_COINS = 20; /* maximale anzahl an münzen */
+  camera_x = 0; /* speichert die kamera position */
+  statusBar = new StatusBar(); /* erstellt die statusbar */
+  throwableObjects = []; /* speichert die geworfenen flaschen */
+  throw_sound = new Audio("./audio/7_bottle/bottleClicking.mp3");
+  coin_sound = new Audio("./audio/11_coins/collectCoin.mp3");
+  hitEndboss_sound = new Audio("./audio/5_chickenBoss/hitEndboss_sound.mp3");
+  running = true; /* gibt an ob das spiel läuft */
+  coins = []; /* speichert die münzen auf der karte */
   score = 0; /* anzahl der gesammelten münzen */
+  bottles = []; /* speichert die aufgesammelten flaschen */
 
+  /* erstellt eine neue spielwelt */
   constructor(canvas, keyboard) {
-    /* speichert das canvas und die tastatureingaben */
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d");
     this.keyboard = keyboard;
     this.statusBar = new StatusBar();
-    this.statusBar.setPersentageCoins(this.score, this.MAX_COINS);
-    this.throwableObjects = [];
-    this.throw_sound = new Audio("/audio/7_bottle/bottleClicking.mp3");
-    this.coin_sound = new Audio("audio/11_coins/collectCoin.mp3");
-    this.running = true;
-    this.score = 0; /* initialisiert den punktestand */
-    this.bottles = [];
-    this.spawnCoins(); /* ruft die funktion auf, um münzen zu erstellen */
-    this.spawnBottles(); /* ruft die funktion auf um flaschen zu erstellen */
-    this.draw(); /* startet das rendern */
     this.setWorld(); /* verbindet den charakter mit der welt */
+    this.spawnCoins(); /* erstellt zufällig platzierte münzen */
+    this.spawnBottles(); /* erstellt zufällig platzierte flaschen */
     this.run(); /* startet die spielmechaniken */
+    this.draw(); /* beginnt das rendern */
   }
 
-  /* verbindet den charakter mit der welt */
+  /* verbindet den charakter mit der spielwelt */
   setWorld() {
     this.character.world = this;
   }
@@ -45,83 +38,142 @@ class World {
   run() {
     this.interval = setInterval(() => {
       if (!this.running) return;
-      this.checkCollision();
+      this.checkCollisionWithEnemies();
       this.checkCollisionCoins();
-      this.checkThrowOjects(); /* prüft, ob ein wurfobjekt geworfen wurde */
+      this.checkCollisionBottles();
+      this.checkThrowObjects();
     }, 300);
+  }
+
+  /* überprüft kollisionen mit feinden und unterscheidet zwischen seitlicher kollision und sprung auf den feind */
+  checkCollisionWithEnemies() {
+    this.level.enemies.forEach((enemy, index) => {
+      if (this.character.isColliding(enemy)) {
+        if (this.isAboveEnemy(enemy)) {
+          console.log("Gegner besiegt!");
+          this.defeatEnemy(enemy, index);
+          this.character.speedY = -15; // Charakter springt zurück hoch
+        } else {
+          console.log("Charakter nimmt Schaden!");
+          this.character.hit();
+          this.statusBar.setPersentageHealth(this.character.energy);
+        }
+      }
+    });
+  }
+
+  /* prüft, ob der charakter wirklich von oben auf den feind springt */
+  isAboveEnemy(enemy) {
+    let characterFeet = this.character.y + this.character.height;
+    let enemyTop = enemy.y + enemy.height / 3; // Feindhöhe für genauere Erkennung angepasst
+
+    return (characterFeet > enemyTop && this.character.speedY >= 0);
+}
+
+  /* besiegt den feind, spielt eine animation ab und entfernt ihn aus dem spiel */
+  defeatEnemy(enemy, index) {
+    if (!(enemy instanceof Endboss)) {
+      /* stellt sicher, dass der endboss nicht besiegt werden kann */
+      enemy.isDead = true; /* setzt flag, damit feind nicht mehrfach entfernt wird */
+      enemy.playDeathAnimation(); /* spielt die animationssequenz des feindes ab */
+      setTimeout(() => {
+        this.level.enemies.splice(
+          index,
+          1
+        ); /* entfernt den feind nach der animation aus dem array */
+      }, 500);
+    }
   }
 
   /* pausiert das spiel */
   pauseGame() {
-    console.log("Spiel pausiert");
+    // console.log("spiel pausiert");
     this.running = false;
-    this.character.pauseAnimation(); // Charakter-Animation pausieren
+    this.character.pauseAnimation();
   }
 
   /* setzt das spiel fort */
   resumeGame() {
-    console.log("Spiel wird fortgesetzt");
+    // console.log("spiel wird fortgesetzt");
     this.running = true;
-    this.character.resumeAnimation(); // Charakter-Animation wieder starten
+    this.character.resumeAnimation();
     this.draw();
   }
 
-  /* überprüft, ob der spieler eine flasche wirft */
-  checkThrowOjects() {
-    if (this.keyboard.SPACE) {
+  /* überprüft ob der spieler eine flasche wirft */
+  checkThrowObjects() {
+    if (this.keyboard.SPACE && this.character.collectedBottles > 0) {
+      // console.log("flasche geworfen");
       let bottle = new ThrowableObjects(
         this.character.x + 100,
         this.character.y + 100
       );
       this.throwableObjects.push(bottle);
       this.throw_sound.play();
+      this.character.collectedBottles--; /* reduziert die anzahl der flaschen */
+      this.statusBar.setPersentageBottles(
+        this.character.collectedBottles
+      ); /* aktualisiert die statusbar */
     }
   }
 
-  /* überprüft kollisionen mit feinden und münzen */
-  checkCollision() {
-    this.level.enemies.forEach((enemy) => {
-      if (this.character.isColliding(enemy)) {
-        this.character.hit(); /* reduziert die lebensenergie des charakters */
-        this.statusBar.setPersentageHealth(this.character.energy);
-        console.log(
-          "character kollidiert, energie beträgt noch",
-          this.character.energy
-        );
+  /* überprüft ob der charakter eine flasche aufsammelt */
+  checkCollisionBottles() {
+    this.bottles.forEach((bottle, index) => {
+      if (this.character.isColliding(bottle)) {
+        // console.log(" flasche aufgesammelt");
+        this.bottles.splice(index, 1);
+        this.character.collectedBottles++;
+        this.statusBar.setPersentageBottles(this.character.collectedBottles);
       }
     });
   }
 
+  /* überprüft ob der charakter eine münze einsammelt */
   checkCollisionCoins() {
     this.coins.forEach((coin, index) => {
       if (this.character.isColliding(coin)) {
         this.coin_sound.play();
-        this.score += 1; // Münzenanzahl erhöhen
-        this.statusBar.setPersentageCoins(this.score); // Statusbar aktualisieren
-        this.coins.splice(index, 1); // Coin aus der Liste entfernen
+        console.log("münze aufgesammelt");
+        this.coin_sound.play();
+        this.score++;
+        this.statusBar.setPersentageCoins(this.score);
+        this.coins.splice(index, 1);
       }
     });
   }
 
-  /* erstellt zufällig positionierte münzen */
+  /* erstellt zufällig platzierte münzen */
   spawnCoins() {
-    this.MAX_COINS = 25; // Setze die maximale Anzahl an Coins
     for (let i = 0; i < 20; i++) {
-      let x = 100 + Math.random() * 3000; /* zufällige x-position */
-      let y = 100 + Math.random() * 150; /* zufällige y-position */
-      let coin = new Coins(); /* erstellt eine neue münze */
-      coin.x = x; /* setzt die x-position */
-      coin.y = y; /* setzt die y-position */
-      this.coins.push(coin); /* fügt die münze dem array hinzu */
+      let x = 100 + Math.random() * 3000;
+      let y = 100 + Math.random() * 150;
+      let coin = new Coins();
+      coin.x = x;
+      coin.y = y;
+      this.coins.push(coin);
     }
   }
 
-  /* zeichnet das gesamte spielobjekte auf das canvas */
+  /* erstellt zufällig platzierte flaschen */
+  spawnBottles() {
+    for (let i = 0; i < 10; i++) {
+      let x = 1000 + Math.random() * 2000;
+      let y = 300;
+      let bottle = new Bottle();
+      bottle.x = x;
+      bottle.y = y;
+      this.bottles.push(bottle);
+    }
+  }
+
+  /* zeichnet alle objekte auf das canvas */
   draw() {
     if (!this.running) return;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.translate(this.camera_x, 0);
     this.addObjectsToMap(this.level.backgroundObjects);
+    console.log("Background Objects: ", this.level.backgroundObjects);
     this.ctx.translate(-this.camera_x, 0);
     this.statusBar.drawStatusBars(this.ctx);
     this.ctx.translate(this.camera_x, 0);
@@ -129,61 +181,37 @@ class World {
     this.addObjectsToMap(this.level.clouds);
     this.addObjectsToMap(this.level.enemies);
     this.addObjectsToMap(this.throwableObjects);
-    this.addObjectsToMap(this.coins); /* fügt die münzen hinzu */
-    // console.log("Bottles im Spiel:", this.bottles);
-    this.addObjectsToMap(this.bottles); /* fügt die flaschen hinzu */
+    this.addObjectsToMap(this.coins);
+    this.addObjectsToMap(this.bottles);
     this.ctx.translate(-this.camera_x, 0);
-    let self = this;
-    requestAnimationFrame(function () {
-      self.draw();
-    });
+    requestAnimationFrame(() => this.draw());
   }
 
   /* fügt mehrere objekte zur zeichnungsliste hinzu */
   addObjectsToMap(objects) {
-    if (!objects || objects.length === 0) return; // Verhindert Fehler, falls Array nicht existiert
+    if (!objects || objects.length === 0) return;
     objects.forEach((o) => this.addToMap(o));
   }
 
-  /* zeichnet ein einzelnes objekt auf das canvas */
-  addToMap(mo) {
-    if (mo.otherDirection) {
-      this.flipImage(mo);
-    }
-    mo.draw(this.ctx);
-    if (mo.drawFrame) {
-      mo.drawFrame(
-        this.ctx
-      ); /* stellt sicher, dass keine fehler durch fehlende drawFrame-methode auftreten */
-    }
-    if (mo.otherDirection) {
-      this.flipImageBack(mo);
-    }
+  /* zeichnet ein objekt auf das canvas */
+  addToMap(obj) {
+    if (obj.otherDirection) this.flipImage(obj);
+    obj.draw(this.ctx);
+    if (obj.drawFrame) obj.drawFrame(this.ctx);
+    if (obj.otherDirection) this.flipImageBack(obj);
   }
 
   /* spiegelt ein objekt horizontal */
-  flipImage(mo) {
+  flipImage(obj) {
     this.ctx.save();
-    this.ctx.translate(mo.width, 0);
+    this.ctx.translate(obj.width, 0);
     this.ctx.scale(-1, 1);
-    mo.x = mo.x * -1;
+    obj.x = obj.x * -1;
   }
 
-  /* setzt das objekt nach dem spiegeln zurück */
-  flipImageBack(mo) {
-    mo.x = mo.x * -1;
+  /* setzt das objekt zurück */
+  flipImageBack(obj) {
+    obj.x = obj.x * -1;
     this.ctx.restore();
-  }
-
-  spawnBottles() {
-    this.bottles = []; // Leeres Array für Flaschen
-    for (let i = 0; i < 10; i++) {
-      let x = 200 + Math.random() * 3000; // Zufällige X-Position
-      let y = 300; // Flaschen liegen auf dem Boden
-      let bottle = new Bottle(); // Neues Flaschen-Objekt
-      bottle.x = x;
-      bottle.y = y;
-      this.bottles.push(bottle); // Flasche in Array speichern
-    }
   }
 }

@@ -1,21 +1,10 @@
 class MovableObject extends DrawableObject {
-  /* grundgeschwindigkeit des objekts */
-  speed = 0.25;
-
-  /* gibt an, ob das objekt in die andere richtung schaut */
-  otherDirection = false;
-
-  /* vertikale geschwindigkeit für sprünge oder fallbewegungen */
-  speedY = 20;
-
-  /* beschleunigung durch schwerkraft */
-  acceleration = 3;
-
-  /* lebensenergie des objekts */
-  energy = 100;
-
-  /* speichert den zeitpunkt des letzten treffers */
-  lastHit = 0;
+  speed = 0.25; /* grundgeschwindigkeit des objekts */
+  otherDirection = false; /* gibt an, ob das objekt in die andere richtung schaut */
+  speedY = 20; /* vertikale geschwindigkeit für sprünge oder fallbewegungen */
+  acceleration = 3; /* beschleunigung durch schwerkraft */
+  energy = 100; /* lebensenergie des objekts */
+  lastHit = 0; /* speichert den zeitpunkt des letzten treffers */
 
   /* aktiviert die schwerkraft für das objekt */
   applyGravity() {
@@ -40,11 +29,39 @@ class MovableObject extends DrawableObject {
   /* prüft, ob zwei objekte kollidieren */
   isColliding(mo) {
     return (
-      this.x < mo.x + mo.width && // linke seite des objekts ist vor der rechten seite des anderen objekts
-      this.x + this.width > mo.x && // rechte seite des objekts ist nach der linken seite des anderen objekts
-      this.y < mo.y + mo.height && // obere seite des objekts ist über der unteren seite des anderen objekts
-      this.y + this.height > mo.y // untere seite des objekts ist unter der oberen seite des anderen objekts
+      this.x + this.width - this.offsetRight >= mo.x + mo.offsetLeft &&
+      this.x - this.offsetLeft <= mo.x + mo.width - mo.offsetRight &&
+      this.y + this.height - this.offsetBottom >= mo.y + mo.offsetTop &&
+      this.y + this.offsetTop <= mo.y + mo.height - mo.offsetBottom
     );
+  }
+
+  isIdle() {
+    if (
+      new Date().getTime() - this.world.keyboard.lastMove > 3000 &&
+      !this.idleTriggered
+    ) {
+      this.startIdleMode();
+      return true;
+    }
+    return false;
+  }
+
+  startIdleMode() {
+    if (!this.idleTriggered) {
+      this.idleTriggered = true;
+      SoundManager.playSound("idle");
+      this.playAnimation(this.IMAGES_IDLE);
+      document.addEventListener("keydown", () => this.stopIdleMode(), {
+        once: true,
+      });
+    }
+  }
+
+  stopIdleMode() {
+    this.idle_sound.pause();
+    this.idle_sound.currentTime = 0;
+    this.idleTriggered = false;
   }
 
   /* wenn das objekt getroffen wird, verringert sich die lebensenergie */

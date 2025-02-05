@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function init() {
   canvas = document.getElementById("canvas");
+//  initlevel(); 
   world = new World(canvas, keyboard);
   // console.log("My character is", world.character);
   musicPlay.loop = true;

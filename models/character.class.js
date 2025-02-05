@@ -207,44 +207,41 @@ class Character extends MovableObject {
 
   /* zeigt gameover endscreen an */
   showRestartPrompt() {
+    if (document.getElementById("restartPrompt")) return; // Falls bereits vorhanden, nicht erneut erstellen
+
     let prompt = Object.assign(document.createElement("div"), {
       id: "restartPrompt",
       innerHTML: "Spiel Neustarten: J=Ja, N=Nein",
-      style: `position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8); color: white;
-            padding: 50px; font-size: 20px; border-radius: 10px;`,
+      style: `
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.8); color: white;
+      padding: 50px; font-size: 20px; border-radius: 10px;
+    `,
     });
+
     document.body.appendChild(prompt);
-    /* falls ein eventListener existiert erst entfernen*/
+
+    // Falls ein EventListener existiert, erst entfernen
     document.removeEventListener("keydown", this.handleRestartEvent);
-    // neuer eventListener registrieren
+
     let self = this;
     this.handleRestartEvent = function (event) {
-      if (event.key.toLowerCase() === "n") self.restartGame();
-      else if (event.key.toLowerCase() === "j") self.world.restartGame();
+      if (event.key.toLowerCase() === "n")
+        window.location.reload(); // Zurück zum Startscreen
+      else if (event.key.toLowerCase() === "j") self.closeRestartPrompt(); // Fenster schließen
     };
+
     document.addEventListener("keydown", this.handleRestartEvent);
   }
 
-  restartGame() {
+  closeRestartPrompt() {
     let restartPrompt = document.getElementById("restartPrompt");
     if (restartPrompt) {
-      restartPrompt.remove(); // Entferne das Element nur, wenn es existiert
+      restartPrompt.remove(); // Entfernt das Fenster
       document.removeEventListener("keydown", this.handleRestartEvent); // Event-Listener entfernen
+      init();
     }
-
-    SoundManager.stopAllSounds(); // Alle laufenden Sounds stoppen
-
-    // Charakter auf Neustart-Werte setzen
-    this.x = 100;
-    this.y = 110;
-    this.energy = 100;
-    this.isDead = false;
-    this.setWorld(this.world);
-    this.world.camera_x = 0; // Kamera zurücksetzen
-    this.world.running = true; // Spiel wieder aktivieren
-    this.world.draw(); // Spielfeld neu rendern
   }
 
   quitGame() {

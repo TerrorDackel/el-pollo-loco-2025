@@ -75,7 +75,7 @@ class World {
     if (!(enemy instanceof Endboss)) {
       /* stellt sicher, dass der endboss nicht besiegt werden kann */
       enemy.isDead = true; /* setzt flag, damit feind nicht mehrfach entfernt wird */
-      enemy.playDeathAnimation(); /* spielt die animationssequenz des feindes ab */
+      enemy.die(); /* spielt die animationssequenz des feindes ab */
       setTimeout(() => {
         this.level.enemies.splice(
           index,

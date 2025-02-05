@@ -21,16 +21,18 @@ class ChickenBig extends MovableObject {
     this.y = 255;
     this.speed = 1.5;
     this.animate();
+    this.debugMode = true; // Aktiviert den roten Rahmen für Gegner
   }
 
-  playDeathAnimation() {
-    if (!this.isDead) {
-      this.isDead = true;
-      clearInterval(this.walkingInterval);
-      this.loadImage(this.IMAGES_DEAD[0]);
-      SoundManager.playSound("chickenBigDead");
-      setTimeout(() => this.removeFromGame(), 500);
-    }
+  /* methode die das enemy sterben lässt */
+  die() {
+    this.isDead = true; /* setzt den status des chickens auf "tot" */
+    this.playAnimation(this.IMAGES_DEAD); /* spielt die todesanimation */
+    SoundManager.playSound("chickenDead"); /* spielt den todes-sound */
+    setTimeout(
+      () => this.removeFromGame(),
+      500
+    ); /* entfernt den gegner nach 500ms */
   }
 
   removeFromGame() {

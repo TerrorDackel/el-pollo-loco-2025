@@ -76,8 +76,8 @@ class Character extends MovableObject {
   collectedBottles = 0;
 
   constructor() {
-    super().loadImage(this.IMAGES_WALKING[0]); // lädt das erste bild der laufanimation
-    this.loadImages(this.IMAGES_WALKING);
+    super().loadImage(this.IMAGES_WALKING[0]); /*lädt das erste bild der laufanimation*/
+    this.loadImages(this.IMAGES_WALKING);  /*lädt die bilder der lauf jump hurt usw animationen */
     this.loadImages(this.IMAGES_JUMPING);
     this.loadImages(this.IMAGES_HURT);
     this.loadImages(this.IMAGES_IDLE);
@@ -85,6 +85,11 @@ class Character extends MovableObject {
     this.applyGravity();
     this.animate();
     this.checkCollisionWithEnemies();
+    /* anpassung des kollisionsrahmens vom pepe */
+    this.offsetTop = 100; /* reduziert den oberen abstand der hitbox */
+    this.offsetBottom = 10; /* setzt den unteren abstand auf 0 */
+    this.offsetLeft = 10; /* verringert den linken abstand */
+    this.offsetRight = 10; /* verringert den rechten abstand */
   }
 
   /* startet die animation des charakters */

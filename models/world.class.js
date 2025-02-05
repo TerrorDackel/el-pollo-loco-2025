@@ -67,8 +67,8 @@ class World {
     let characterFeet = this.character.y + this.character.height;
     let enemyTop = enemy.y + enemy.height / 3; // Feindhöhe für genauere Erkennung angepasst
 
-    return (characterFeet > enemyTop && this.character.speedY >= 0);
-}
+    return characterFeet > enemyTop && this.character.speedY >= 0;
+  }
 
   /* besiegt den feind, spielt eine animation ab und entfernt ihn aus dem spiel */
   defeatEnemy(enemy, index) {
@@ -100,20 +100,25 @@ class World {
     this.draw();
   }
 
+  restartGame() {
+    Object.assign(this, new World(this.canvas, this.keyboard));
+  }
+
+  createEnemies() {
+    return [new Chicken(), new ChickenBig(), new Chickensmall()];
+  }
+
   /* überprüft ob der spieler eine flasche wirft */
   checkThrowObjects() {
     if (this.keyboard.SPACE && this.character.collectedBottles > 0) {
-      // console.log("flasche geworfen");
       let bottle = new ThrowableObjects(
         this.character.x + 100,
         this.character.y + 100
       );
       this.throwableObjects.push(bottle);
-      this.throw_sound.play();
-      this.character.collectedBottles--; /* reduziert die anzahl der flaschen */
-      this.statusBar.setPersentageBottles(
-        this.character.collectedBottles
-      ); /* aktualisiert die statusbar */
+      SoundManager.playSound("throwBottle");
+      this.character.collectedBottles--;
+      this.statusBar.setPersentageBottles(this.character.collectedBottles);
     }
   }
 
@@ -133,9 +138,9 @@ class World {
   checkCollisionCoins() {
     this.coins.forEach((coin, index) => {
       if (this.character.isColliding(coin)) {
-        this.coin_sound.play();
-        console.log("münze aufgesammelt");
-        this.coin_sound.play();
+        SoundManager.playSound("coin");
+        // console.log("münze aufgesammelt");
+       SoundManager.playSound("coin");
         this.score++;
         this.statusBar.setPersentageCoins(this.score);
         this.coins.splice(index, 1);
@@ -173,7 +178,7 @@ class World {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.translate(this.camera_x, 0);
     this.addObjectsToMap(this.level.backgroundObjects);
-    console.log("Background Objects: ", this.level.backgroundObjects);
+    // console.log("Background Objects: ", this.level.backgroundObjects);
     this.ctx.translate(-this.camera_x, 0);
     this.statusBar.drawStatusBars(this.ctx);
     this.ctx.translate(this.camera_x, 0);

@@ -27,7 +27,6 @@ class Coins {
 
   /* speichert versprechen für das laden der bilder */
   loadImagePromises = [];
-  coinCollect_sound = new Audio("/audio/11_coins/collectCoin.mp3");
 
   constructor() {
     /* lade die bilder und speichere die promises */

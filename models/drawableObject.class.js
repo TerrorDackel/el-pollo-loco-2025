@@ -30,7 +30,7 @@ class DrawableObject {
 
   draw(ctx) {
     if (!this.img) {
-      console.error(" drawImage() Fehler: Kein Bild geladen für", this);
+      // console.error(" drawImage() Fehler: Kein Bild geladen für", this);
       return; // Verhindert das Zeichnen eines ungültigen Bildes
     }
     ctx.drawImage(this.img, this.x, this.y, this.width, this.height);

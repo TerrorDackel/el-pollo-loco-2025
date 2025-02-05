@@ -12,27 +12,29 @@ class Chicken extends MovableObject {
 
   IMAGES_DEAD = ["./imgs/3_enemies_chicken/chicken_normal/2_dead/dead.png"];
 
-  walking_sound = new Audio("/audio/4_chicken/chickenBig.mp3");
-  deadChicken_sound = new Audio("./audio/4_chicken/chicken_dead.mp3");
-
   constructor() {
     super().loadImage(this.IMAGES_WALKING[0]);
-    this.x = 200 + Math.random() * 3500;
+    this.x = 500 + Math.random() * 3500;
     this.y = 320 + Math.random() * 15;
     this.loadImages(this.IMAGES_WALKING);
     this.loadImages(this.IMAGES_DEAD);
     this.animate();
-    this.speed = 0.15 + Math.random() * 1;
+    this.speed = 0.55 + Math.random() * 1;
   }
 
   animate() {
-    setInterval(() => {
-      this.moveLeft();
-    }, 1000 / 60);
-
-    setInterval(() => {
-      let i = this.playAnimation(this.IMAGES_WALKING);
-    }, 100);
+   setInterval(() => {
+     if (!this.isDead()) {
+       this.moveLeft();
+     }
+   }, 1000 / 60);
+   setInterval(() => {
+     if (this.isDead()) {
+       this.playAnimation(this.IMAGES_DEAD);
+     } else {
+       this.playAnimation(this.IMAGES_WALKING);
+     }
+   }, 100);
   }
 
   animate() {
@@ -49,6 +51,7 @@ class Chicken extends MovableObject {
       this.isDead = true;
       clearInterval(this.walkingInterval); // Stoppt Bewegung
       this.loadImage(this.IMAGES_DEAD[0]); // Ändert das Bild zu "tot"
+      SoundManager.playSound("chickenDead");
       setTimeout(() => this.removeFromGame(), 500); // Entfernt nach 500ms
     }
   }

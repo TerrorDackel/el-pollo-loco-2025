@@ -72,12 +72,6 @@ class Character extends MovableObject {
   setWorld(world) {
     this.world = world;
   }
-  /* soundeffekte */
-  walking_sound = new Audio("./audio/1_walking/walking.mp3");
-  jumping_sound = new Audio("./audio/2_jump/maleShortJump.mp3");
-  dead_sound = new Audio("./audio/9_lost/man dying.mp3");
-  hurt_sound = new Audio("./audio/10_hit/hit.mp3");
-  idle_sound = new Audio("./audio/1_walking/snores.mp3");
   animationInterval;
   collectedBottles = 0;
 
@@ -96,9 +90,8 @@ class Character extends MovableObject {
   /* startet die animation des charakters */
   animate() {
     this.animationInterval = setInterval(() => {
-      this.walking_sound.pause();
+      // SoundManager.pauseSound(walking);
       this.handleMovement();
-      // this.handleCollisions();
       this.updateCamera();
       this.updateAnimation();
     }, 1000 / 30);
@@ -136,14 +129,6 @@ class Character extends MovableObject {
   checkForCoinCollision() {
     if (!this.world) return;
     this.world.coins.forEach((coin, index) => {
-      console.log("🔍 Prüfe Kollision mit Coin:", coin);
-      console.log(
-        `🆚 Charakter: x=${this.x}, y=${this.y}, width=${this.width}, height=${this.height}`
-      );
-      console.log(
-        `🆚 Coin: x=${coin.x}, y=${coin.y}, width=${coin.width}, height=${coin.height}`
-      );
-      // console.log("Prüfe Kollision mit Coin:", coin);
       if (this.isColliding(coin)) {
         this.world.coins.splice(index, 1);
         this.world.score += 1;
@@ -154,10 +139,9 @@ class Character extends MovableObject {
 
   checkForBottleCollision() {
     if (!this.world || !this.world.bottles) return; // Falls `world` oder `bottles` nicht existieren, abbrechen
-
     this.world.bottles.forEach((bottle, index) => {
       if (this.isColliding(bottle)) {
-        console.log("Flasche aufgesammelt!");
+        // console.log("Flasche aufgesammelt!");
         this.world.bottles.splice(index, 1); // Flasche aus Array entfernen
         this.collectedBottles = (this.collectedBottles || 0) + 1; // Sicherstellen, dass es eine Zahl ist
         this.world.statusBar.setPersentageBottles(this.collectedBottles); // StatusBar aktualisieren
@@ -168,7 +152,6 @@ class Character extends MovableObject {
   /* überprüft kollisionen mit gegnern */
   checkCollisionWithEnemies() {
     if (!this.world || !this.world.level.enemies) return;
-
     this.world.level.enemies.forEach((enemy, index) => {
       if (this.isCollidingWith(enemy)) {
         if (this.isAboveEnemy(enemy)) {
@@ -186,11 +169,9 @@ class Character extends MovableObject {
   isAboveEnemy(enemy) {
     let charFeetY = this.y + this.height; // Y-Koordinate der Füße
     let enemyTopY = enemy.y; // Oberseite des Gegners
-
     console.log("Prüfe, ob Charakter über dem Feind ist:");
     console.log(`Charakter-Füße: y=${charFeetY}`);
     console.log(`Gegner-Oberseite: y=${enemyTopY}`);
-
     return (
       charFeetY >= enemyTopY && // Die Füße sind auf oder leicht unter dem Feind
       this.speedY > 0 // Charakter bewegt sich nach unten
@@ -201,6 +182,7 @@ class Character extends MovableObject {
     if (!(enemy instanceof Endboss)) {
       enemy.isDead = true;
       enemy.playDeathAnimation();
+      SoundManager.playSound("chickenDead");
       setTimeout(() => {
         this.world.level.enemies.splice(index, 1);
       }, 500);
@@ -228,38 +210,46 @@ class Character extends MovableObject {
     let prompt = Object.assign(document.createElement("div"), {
       id: "restartPrompt",
       innerHTML: "Spiel Neustarten: J=Ja, N=Nein",
-      style: `
-            position: absolute; top: 50%; left: 50%;
+      style: `position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             background: rgba(0, 0, 0, 0.8); color: white;
-            padding: 20px; font-size: 20px; border-radius: 10px;
-        `,
+            padding: 50px; font-size: 20px; border-radius: 10px;`,
     });
-
     document.body.appendChild(prompt);
-
     /* falls ein eventListener existiert erst entfernen*/
     document.removeEventListener("keydown", this.handleRestartEvent);
-
     // neuer eventListener registrieren
     let self = this;
-
     this.handleRestartEvent = function (event) {
-      if (event.key.toLowerCase() === "j") self.restartGame();
-      else if (event.key.toLowerCase() === "n") self.quitGame();
+      if (event.key.toLowerCase() === "n") self.restartGame();
+      else if (event.key.toLowerCase() === "j") self.world.restartGame();
     };
-
     document.addEventListener("keydown", this.handleRestartEvent);
   }
 
   restartGame() {
-    console.log("🔄 Spiel wird neu gestartet...");
-    window.location.reload(); // Seite neuladen
+    let restartPrompt = document.getElementById("restartPrompt");
+    if (restartPrompt) {
+      restartPrompt.remove(); // Entferne das Element nur, wenn es existiert
+      document.removeEventListener("keydown", this.handleRestartEvent); // Event-Listener entfernen
+    }
+
+    SoundManager.stopAllSounds(); // Alle laufenden Sounds stoppen
+
+    // Charakter auf Neustart-Werte setzen
+    this.x = 100;
+    this.y = 110;
+    this.energy = 100;
+    this.isDead = false;
+    this.setWorld(this.world);
+    this.world.camera_x = 0; // Kamera zurücksetzen
+    this.world.running = true; // Spiel wieder aktivieren
+    this.world.draw(); // Spielfeld neu rendern
   }
 
   quitGame() {
-    console.log("x Spiel beendet.");
-    window.close(); /* Funktioniert nicht in allen Browsern!*/
+    // console.log("x Spiel beendet.");
+    window.close();
   }
 
   updateCamera() {
@@ -275,7 +265,7 @@ class Character extends MovableObject {
   handleDeath() {
     if (!this.deadAnimationPlayed) {
       this.playAnimation(this.IMAGES_DEAD);
-      this.dead_sound.play();
+      SoundManager.playSound("dead");
       setTimeout(() => {
         this.deadAnimationPlayed = true;
         this.showRestartPrompt();

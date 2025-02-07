@@ -76,8 +76,13 @@ class Character extends MovableObject {
   collectedBottles = 0;
 
   constructor() {
-    super().loadImage(this.IMAGES_WALKING[0]); /*lädt das erste bild der laufanimation*/
-    this.loadImages(this.IMAGES_WALKING);  /*lädt die bilder der lauf jump hurt usw animationen */
+    super().loadImage(
+      this.IMAGES_WALKING[0]
+    ); /*lädt das erste bild der laufanimation*/
+    this.loadImages(
+      this.IMAGES_WALKING
+    ); /*lädt die bilder der lauf jump hurt usw animationen */
+    this.world = world;
     this.loadImages(this.IMAGES_JUMPING);
     this.loadImages(this.IMAGES_HURT);
     this.loadImages(this.IMAGES_IDLE);
@@ -85,6 +90,7 @@ class Character extends MovableObject {
     this.applyGravity();
     this.animate();
     this.checkCollisionWithEnemies();
+
     /* anpassung des kollisionsrahmens vom pepe */
     this.offsetTop = 100; /* reduziert den oberen abstand der hitbox */
     this.offsetBottom = 10; /* setzt den unteren abstand auf 0 */
@@ -95,7 +101,7 @@ class Character extends MovableObject {
   /* startet die animation des charakters */
   animate() {
     this.animationInterval = setInterval(() => {
-      // SoundManager.pauseSound(walking);
+      SoundManager.pauseSound("walking");
       this.handleMovement();
       this.updateCamera();
       this.updateAnimation();
@@ -150,46 +156,59 @@ class Character extends MovableObject {
         this.world.bottles.splice(index, 1); // Flasche aus Array entfernen
         this.collectedBottles = (this.collectedBottles || 0) + 1; // Sicherstellen, dass es eine Zahl ist
         this.world.statusBar.setPersentageBottles(this.collectedBottles); // StatusBar aktualisieren
+        SoundManager.playSound("collectingBottle");
       }
     });
   }
 
-  /* überprüft kollisionen mit gegnern */
+  /**
+   * Überprüft Kollisionen zwischen dem Charakter und Gegnern.
+   */
   checkCollisionWithEnemies() {
-    if (!this.world || !this.world.level.enemies) return;
-    this.world.level.enemies.forEach((enemy, index) => {
-      if (this.isCollidingWith(enemy)) {
-        if (this.isAboveEnemy(enemy)) {
-          console.log("Feind getötet!");
-          this.defeatEnemy(enemy, index);
-        } else {
-          console.log("Schaden genommen!");
-          this.hit();
-          this.world.statusBar.setPersentageHealth(this.energy);
-        }
+  if (!this.world || !this.world.enemies) return; // Sicherstellen, dass `enemies` existiert
+
+  this.world.enemies.forEach((enemy, index) => {
+    if (this.isColliding(enemy)) {
+      let charRight = this.x + this.width; // Rechte Seite des Charakters
+      let enemyRight = enemy.x + enemy.width; // Rechte Seite des Gegners
+      let charBottom = this.y + this.height; // Untere Seite des Charakters
+      let enemyTop = enemy.y; // Obere Seite des Gegners
+      /**
+       * Gegner stirbt nur, wenn der Charakter wirklich von oben fällt
+       * und nicht seitlich in den Gegner läuft.
+       */
+      if (charBottom >= enemyTop &&(charRight <= enemy.x || this.x >= enemyRight)
+      ) {
+        console.log("Gegner besiegt!");
+        this.defeatEnemy(enemy, index); // Entfernt den Gegner
+        this.speedY = -15; // Rückstoß nach oben
+      } else {
+        console.log("Charakter nimmt Schaden!");
+        this.hit(); // Charakter nimmt Schaden
+        this.statusBar.setPersentageHealth(this.energy); // Lebensanzeige aktualisieren
       }
-    });
+    }
+  });
   }
 
+  /* prüft, ob der charakter wirklich von oben auf den feind springt */
   isAboveEnemy(enemy) {
-    let charFeetY = this.y + this.height; // Y-Koordinate der Füße
-    let enemyTopY = enemy.y; // Oberseite des Gegners
-    console.log("Prüfe, ob Charakter über dem Feind ist:");
-    console.log(`Charakter-Füße: y=${charFeetY}`);
-    console.log(`Gegner-Oberseite: y=${enemyTopY}`);
-    return (
-      charFeetY >= enemyTopY && // Die Füße sind auf oder leicht unter dem Feind
-      this.speedY > 0 // Charakter bewegt sich nach unten
-    );
+    let characterFeet = this.character.y + this.character.height;
+    let enemyTop = enemy.y; // Oberste Kante des Gegners
+    return characterFeet >= enemyTop; // Prüft, ob die Füße auf oder unterhalb des Gegners sind
   }
 
+  /* besiegt den feind, spielt eine animation ab und entfernt ihn aus dem spiel */
   defeatEnemy(enemy, index) {
     if (!(enemy instanceof Endboss)) {
-      enemy.isDead = true;
-      enemy.playDeathAnimation();
-      SoundManager.playSound("chickenDead");
+      /* stellt sicher, dass der endboss nicht besiegt werden kann */
+      enemy.isDead = true; /* setzt flag, damit feind nicht mehrfach entfernt wird */
+      enemy.die(); /* spielt die animationssequenz des feindes ab */
       setTimeout(() => {
-        this.world.level.enemies.splice(index, 1);
+        this.world.enemies.splice(
+          index,
+          1
+        ); /* entfernt den feind nach der animation aus dem array */
       }, 500);
     }
   }

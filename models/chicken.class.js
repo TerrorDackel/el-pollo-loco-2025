@@ -16,23 +16,14 @@ class Chicken extends MovableObject {
   /* konstruktor initialisiert das chicken */
   constructor() {
     super().loadImage(
-      this.IMAGES_WALKING[0]
-    ); /* lädt das erste bild der lauf-animation */
-    this.x =
-      500 +
-      Math.random() *
-        3500; /* setzt die zufällige startposition auf der x-achse */
-    this.y =
-      320 +
-      Math.random() *
-        15; /* setzt die zufällige startposition auf der y-achse */
+    this.IMAGES_WALKING[0]); /* lädt das erste bild der lauf-animation */
+    this.x = 500 + Math.random() * 3000; /* setzt die zufällige startposition auf der x-achse */
+    this.y = 310; /* setzt startposition auf der y-achse */
     this.loadImages(this.IMAGES_WALKING); /* lädt alle lauf-animationen */
     this.loadImages(this.IMAGES_DEAD); /* lädt das todesbild */
     this.animate(); /* startet die animation */
-    this.speed =
-      0.55 +
-      Math.random() *
-        1; /* setzt eine zufällige geschwindigkeit für das chicken */
+    this.moveLeft();
+    this.speed = 0.3 + Math.random() * 0.5;/* setzt eine zufällige geschwindigkeit für das chicken */
     this.debugMode = true; /* aktiviert den roten rahmen für debug-zwecke */
     /* setzt die offsets für die hitbox, damit der blaue rahmen genauer passt */
     this.offsetTop = -10; /* reduziert die hitbox nach oben */
@@ -48,7 +39,7 @@ class Chicken extends MovableObject {
         this.moveLeft(); /* bewegt das chicken nach links */
         this.playAnimation(this.IMAGES_WALKING); /* spielt die lauf-animation */
       }
-    }, 100); /* aktualisiert die bewegung und animation alle 100 millisekunden */
+    }, 1000 / 60);/* aktualisiert die bewegung und animation alle 100 millisekunden */
   }
 
   /* methode, die das chicken sterben lässt */

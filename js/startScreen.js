@@ -28,7 +28,7 @@ function startGame() {
     setTimeout(() => {
       startScreen.remove(); // Danach endgültig löschen
       init(); // Spiel starten
-    }, 1000); // 1000ms (1 Sekunde) für langsameres Fade-Out
+    }, 1500); // 1500ms (1,5 Sekunde) für langsameres Fade-Out
   }
 }
 
@@ -82,6 +82,6 @@ function showOverlay(content) {
         // EventListener sicher entfernen, damit sie sich nicht stapeln
         document.removeEventListener("click", closeOverlay);
     }
-}
+  }
 
-}
+} 

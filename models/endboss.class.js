@@ -66,13 +66,17 @@ class Endboss extends MovableObject {
     this.x = 3400; /* setzt die startposition des endbosses */
     this.y = 10; /* setzt die vertikale position */
     this.animate(); /* startet die animationssteuerung */
-    this.speed = -0.1; /* setzt die geschwindigkeit des endbosses */
+    this.speed = 0.1; /* setzt die geschwindigkeit des endbosses */
     this.debugMode = true; /* aktiviert den roten rahmen für den endboss */
   }
 
-  /* setzt den status, dass der endboss den spieler berührt */
+  setWorld(world) {
+    this.world = world;
+  }
+
+  /* setzt den status, dass der endboss mit den spieler collidiert */
   letEndbossTouch() {
-    this.contactWithCharacter = true; /* speichert, dass der spieler den endboss berührt */
+    this.contactWithCharacter = true; /* speichert, dass der spieler den endboss kollidiert */
   }
 
   /* bewegt den endboss nach links */
@@ -84,6 +88,7 @@ class Endboss extends MovableObject {
 
   /* reduziert die energie des endbosses bei einer kollision mit einer flasche */
   hitByBottle() {
+    console.log("endboss wurde getroffen", this.energy);
     if (this.energy > 1) {
       this.energy--; /* reduziert energie um 1 */
       this.isHurt = true; /* setzt den status auf verletzt */
@@ -138,11 +143,11 @@ class Endboss extends MovableObject {
     setInterval(() => {
       if (this.isHurt == false) {
         /* falls der endboss nicht verletzt ist */
-        this.playAnimation(this.IMAGES_ANGRY); /* spielt die wut-animation */
+        this.playAnimation(this.IMAGES_WALK); /* spielt die wut-animation */
       }
       if (this.contactWithCharacter == true) {
         /* falls der spieler den endboss berührt */
-        this.playAnimation(this.IMAGES_WALK); /* spielt die geh-animation */
+        this.playAnimation(this.IMAGES_ANGRY); /* spielt die geh-animation */
         this.endbossMoveLeft(); /* bewegt den endboss nach links */
       }
     }, 200); /* wechselt das bild alle 200 millisekunden */

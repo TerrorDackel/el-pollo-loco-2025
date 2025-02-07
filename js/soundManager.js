@@ -5,8 +5,9 @@ class SoundManager {
     jumping: new Audio("./audio/2_jump/maleShortJump.mp3"),
     dead: new Audio("./audio/9_lost/man dying.mp3"),
     hurt: new Audio("./audio/10_hit/hit.mp3"),
-    idle: new Audio("./audio/1_walking/snores.mp3"),
-    throwBottle: new Audio("./audio/7_bottle/bottleClicking.mp3"),
+    // idle: new Audio("./audio/1_walking/snores.mp3"),
+    collectingBottle: new Audio("./audio/7_bottle/bottleClicking.mp3"),
+    whisleBottle: new Audio("./audio/7_bottle/whisle.mp3"),
     smashBottle: new Audio("./audio/7_bottle/bottleClicking.mp3"),
     coin: new Audio("./audio/11_coins/collectCoin.mp3"),
     endbossHit: new Audio("./audio/5_chickenBoss/hitEndboss_sound.mp3"),
@@ -21,14 +22,32 @@ class SoundManager {
   };
 
   static isMuted = true;
+  static maxVolume = 0.5; // Maximale Lautstärke für alle Sounds
 
-  /** Sound stummschalten oder wieder aktivieren */
+  static volumeSettings = {
+     music: 0.9,
+    jumping: 0.6,
+    dead: 0.4,
+    hurt: 0.5,
+    idle: 0.1,
+    whisleBottle: 0.7,
+    smashBottle: 0.7,
+    chickenBig: 0.1,
+    chickenSmall: 1,
+    endbossHit: 0.5,
+    chickenDead: 0.5,
+    endboss: 0,
+    endbossDead: 0
+  };
+
+  /** Sound an/aus schalten */
   static toggleSound() {
     this.isMuted = !this.isMuted;
+
     Object.values(this.sounds).forEach((sound) => {
       sound.muted = this.isMuted;
-      if (sound.loop && !this.isMuted) {
-        sound.play();
+      if (!this.isMuted) {
+        sound.play().catch(() => {}); // Falls Autoplay blockiert, einfach ignorieren
       } else {
         sound.pause();
       }
@@ -47,6 +66,7 @@ class SoundManager {
     if (!this.isMuted && this.sounds[soundName]) {
       this.sounds[soundName].currentTime = 0;
       this.sounds[soundName].play();
+      console.log(soundName);
     }
   }
 

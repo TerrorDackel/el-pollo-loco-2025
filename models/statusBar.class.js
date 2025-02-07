@@ -1,5 +1,12 @@
+/**
+ * Klasse zur Darstellung der Statusleisten im Spiel.
+ * Zeigt die Lebenspunkte, Münzen und Flaschenanzahl des Spielers an.
+ */
 class StatusBar extends DrawableObject {
-  /* speichert die bildpfade für die statusleisten von leben, münzen und flaschen */
+  /**
+   * Bilder für verschiedene Statusanzeigen
+   * @type {string[]}
+   */
   IMAGES_HEALTHBAR = [
     "./imgs/7_statusbars/1_statusbar/2_statusbar_health/blue/0.png",
     "./imgs/7_statusbars/1_statusbar/2_statusbar_health/blue/20.png",
@@ -33,7 +40,9 @@ class StatusBar extends DrawableObject {
   amountCoins = 0;
   amountBottles = 0;
 
-  /* initialisiert die statusbar mit allen bildern und setzt standardwerte */
+  /**
+   * Erstellt eine StatusBar-Instanz und lädt die Statusbilder.
+   */
   constructor() {
     super();
     this.loadImages(this.IMAGES_HEALTHBAR, "health");
@@ -76,7 +85,10 @@ class StatusBar extends DrawableObject {
     ctx.drawImage(img, x, y, this.width, this.height);
   }
 
-  /* aktualisiert die statusleiste für leben */
+  /**
+   * Setzt den prozentualen Gesundheitswert und aktualisiert die Anzeige.
+   * @param {number} persentageHealth - Der Gesundheitswert (0-100)
+   */
   setPersentageHealth(persentageHealth) {
     this.persentageHealth = persentageHealth;
     let index = this.resolveIndex(persentageHealth);
@@ -104,7 +116,7 @@ class StatusBar extends DrawableObject {
     this.amountBottles = amountBottles;
     let index = this.resolveIndex(amountBottles);
     this.imgBottles = this.imageCacheBottles[this.IMAGES_BOTTLESBAR[index]];
-    console.log("flaschen in statusbar", this.amountBottles);
+    // console.log("flaschen in statusbar", this.amountBottles);
   }
 
   /* berechnet den index für das passende bild in der statusleiste */

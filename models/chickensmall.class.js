@@ -33,29 +33,13 @@ class Chickensmall extends MovableObject {
         0.9; /* setzt eine zufällige geschwindigkeit für das chickensmall */
     this.debugMode = true; /* aktiviert den roten rahmen für debug-zwecke */
 
-    /* setzt die offsets für die hitbox, damit der blaue rahmen genauer passt */
-    this.offsetTop = 5; /* reduziert die hitbox nach oben */
-    this.offsetBottom = 5; /* reduziert die hitbox nach unten */
-    this.offsetLeft = 5; /* macht die hitbox schmaler (links) */
-    this.offsetRight = 5; /* macht die hitbox schmaler (rechts) */
+    this.world =
+      null; /* initialisiert die welt-variable für das objekt, wird später gesetzt */
   }
 
-  /* methode zur steuerung der bewegung des chickensmall */
-  animate() {
-    this.walkingInterval = setInterval(() => {
-      if (!this.isDead) {
-        this.moveLeft(); /* bewegt das chickensmall nach links */
-        this.playAnimation(this.IMAGES_WALKING); /* spielt die lauf-animation */
-      }
-    }, 100); /* aktualisiert die bewegung und animation alle 100 millisekunden */
-
-    setInterval(() => {
-      if (this.isDead()) {
-        this.playAnimation(this.IMAGES_DEAD); /* spielt die todes-animation */
-      } else {
-        this.playAnimation(this.IMAGES_WALKING); /* spielt die lauf-animation */
-      }
-    }, 130); /* wechselt die animation alle 130 millisekunden */
+  /* methode zum setzen der spielwelt für das chickensmall */
+  setWorld(world) {
+    this.world = world; /* speichert eine referenz zur spielwelt */
   }
 
   /* methode, die das chickensmall sterben lässt */
@@ -71,28 +55,27 @@ class Chickensmall extends MovableObject {
 
   /* entfernt das chickensmall aus dem spiel */
   removeFromGame() {
-    let index =
-      this.world.level.enemies.indexOf(
-        this
-      ); /* prüft, ob das chickensmall noch in der liste der gegner existiert */
+    let index = this.world?.level?.enemies.indexOf(this); // Welt-Check hinzugefügt
     if (index > -1) {
-      this.world.level.enemies.splice(
-        index,
-        1
-      ); /* entfernt das chickensmall aus der liste der gegner */
+      this.world.level.enemies.splice(index, 1);
     }
   }
 
-  /* zweite animate-methode (doppelt vorhanden, wird bereinigt) */
+  /* methode zur steuerung der bewegung des chickensmall */
   animate() {
-    setInterval(() => {
-      this.moveLeft(); /* bewegt das chickensmall nach links */
-    }, 1000 / 60); /* aktualisiert die position alle 16,6 millisekunden (60 fps) */
+    this.walkingInterval = setInterval(() => {
+      if (!this.isDead) {
+        this.moveLeft(); /* bewegt das chickensmall nach links */
+        this.playAnimation(this.IMAGES_WALKING); /* spielt die lauf-animation */
+      }
+    }, 100); /* aktualisiert die bewegung und animation alle 100 millisekunden */
 
     setInterval(() => {
-      let i = this.playAnimation(
-        this.IMAGES_WALKING
-      ); /* spielt die lauf-animation */
-    }, 100); /* wechselt das bild alle 100 millisekunden */
+      if (this.isDead) {
+        this.playAnimation(this.IMAGES_DEAD); /* spielt die todes-animation */
+      } else {
+        this.playAnimation(this.IMAGES_WALKING); /* spielt die lauf-animation */
+      }
+    }, 130); /* wechselt die animation alle 130 millisekunden */
   }
 }

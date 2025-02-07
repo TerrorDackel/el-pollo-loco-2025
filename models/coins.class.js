@@ -1,8 +1,8 @@
 class Coins extends DrawableObject {
   /* bildquellen für die animation der münze */
   IMAGES_COINS = [
-    "./imgs/8_coin/Gold_1.png", /* pfad zum ersten bild der münzen-animation */
-    "./imgs/8_coin/Gold_2.png", 
+    "./imgs/8_coin/Gold_1.png" /* pfad zum ersten bild der münzen-animation */,
+    "./imgs/8_coin/Gold_2.png",
     "./imgs/8_coin/Gold_3.png",
     "./imgs/8_coin/Gold_4.png",
     "./imgs/8_coin/Gold_5.png",
@@ -10,7 +10,7 @@ class Coins extends DrawableObject {
     "./imgs/8_coin/Gold_7.png",
     "./imgs/8_coin/Gold_8.png",
     "./imgs/8_coin/Gold_9.png",
-    "./imgs/8_coin/Gold_10.png"
+    "./imgs/8_coin/Gold_10.png",
   ];
 
   /* eigenschaften der münze */
@@ -72,10 +72,10 @@ class Coins extends DrawableObject {
       ); /* zeichnet die münze auf dem canvas */
       ctx.restore(); /* stellt den vorherigen canvas-zustand wieder her */
       this.drawGreenFrame(ctx); /* zeichnet einen grünen rahmen um die münze */
-      console.log(
-        "drawGreenFrame für Coin aufgerufen",
-        this
-      ); /* debug ausgabe */
+      // console.log(
+      //   "drawGreenFrame für Coin aufgerufen",
+      //   this
+      // ); /* debug ausgabe */
     }
   }
 

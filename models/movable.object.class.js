@@ -27,20 +27,15 @@ class MovableObject extends DrawableObject {
   }
 
   /* prüft, ob zwei objekte kollidieren */
-  isColliding(mo) {
-    return (
-      this.x + this.width - this.offsetRight >= mo.x + mo.offsetLeft &&
-      this.x - this.offsetLeft <= mo.x + mo.width - mo.offsetRight &&
-      this.y + this.height - this.offsetBottom >= mo.y + mo.offsetTop &&
-      this.y + this.offsetTop <= mo.y + mo.height - mo.offsetBottom
-    );
-  }
+    isColliding(mo) {
+        return (this.x + this.width - this.offsetRight) >= (mo.x + mo.offsetLeft) && (this.x - this.offsetLeft) <= (mo.x + mo.width - mo.offsetRight) &&
+            (this.y + this.height - this.offsetBottom) >= (mo.y + mo.offsetTop) &&
+            (this.y + this.offsetTop) <= (mo.y + mo.height - mo.offsetBottom);
+    }
+
 
   isIdle() {
-    if (
-      new Date().getTime() - this.world.keyboard.lastMove > 3000 &&
-      !this.idleTriggered
-    ) {
+    if (new Date().getTime() - this.world.keyboard.lastMove > 3000 && !this.idleTriggered) {
       this.startIdleMode();
       return true;
     }
@@ -59,7 +54,7 @@ class MovableObject extends DrawableObject {
   }
 
   stopIdleMode() {
-    this.idle_sound.pause();
+    SoundManager.pause("idle");
     this.idle_sound.currentTime = 0;
     this.idleTriggered = false;
   }
@@ -77,8 +72,8 @@ class MovableObject extends DrawableObject {
   /* prüft, ob das objekt kürzlich getroffen wurde */
   isHurt() {
     let timepassed = new Date().getTime() - this.lastHit; // zeit seit dem letzten treffer berechnen
-    timepassed = timepassed / 1000; // umrechnung in sekunden
-    return timepassed < 1; // objekt gilt als verletzt, wenn der treffer weniger als 1 sekunde her ist
+    timepassed = timepassed / 1500; // umrechnung in sekunden
+    return timepassed < 1.5; // objekt gilt als verletzt, wenn der treffer weniger als 1 sekunde her ist
   }
 
   /* prüft, ob das objekt keine energie mehr hat */

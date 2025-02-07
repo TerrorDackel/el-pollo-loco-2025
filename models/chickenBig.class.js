@@ -19,8 +19,9 @@ class ChickenBig extends MovableObject {
     this.loadImages(this.IMAGES_DEAD);
     this.x = 3500;
     this.y = 255;
-    this.speed = 1.5;
+    this.speed = 1;
     this.animate();
+    this.moveLeft();
     this.debugMode = true; // Aktiviert den roten Rahmen für Gegner
   }
 

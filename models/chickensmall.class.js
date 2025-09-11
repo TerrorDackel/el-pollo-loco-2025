@@ -35,6 +35,10 @@ class Chickensmall extends MovableObject {
 
         this.world =
         null; /* initialisiert die welt-variable für das objekt, wird später gesetzt */
+        this.offsetTop = -10; /* reduziert die hitbox nach oben */
+        this.offsetBottom = -10; /* reduziert die hitbox nach unten */
+        this.offsetLeft = -10; /* macht die hitbox schmaler (links) */
+        this.offsetRight = -10; /* macht die hitbox schmaler (rechts) */
     }
 
     /* methode zum setzen der spielwelt für das chickensmall */

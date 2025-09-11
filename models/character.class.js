@@ -83,13 +83,10 @@ class Character extends MovableObject {
         this.offsetLeft = 10;
         this.offsetRight = 10;
 
-        /* Start-Energie = 5 Herzen */
         this.energy = 5;
     }
 
-    setWorld(world) {
-        this.world = world;
-    }
+    setWorld(world) { this.world = world; }
 
     animate() {
         this.animationInterval = setInterval(() => {
@@ -98,40 +95,27 @@ class Character extends MovableObject {
             this.updateCamera();
             this.updateAnimation();
             this.checkCollisionWithEnemies();
-            this.checkCollisionWithEnemies();
-            this.checkCollisionWithEndboss();
-
         }, 1000 / 30);
     }
 
-    pauseAnimation() {
-        clearInterval(this.animationInterval);
-    }
-
-    resumeAnimation() {
-        this.animate();
-    }
+    pauseAnimation() { clearInterval(this.animationInterval); }
+    resumeAnimation() { this.animate(); }
 
     handleMovement() {
         if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
-            this.moveRight();
-            this.otherDirection = false;
+            this.moveRight(); this.otherDirection = false;
             SoundManager.playSound("walking");
         }
         if (this.world.keyboard.LEFT && this.x > 0) {
-            this.moveLeft();
-            this.otherDirection = true;
+            this.moveLeft(); this.otherDirection = true;
             SoundManager.playSound("walking");
         }
         if (this.world.keyboard.UP && !this.isAboveGround()) {
-            this.jump();
-            SoundManager.playSound("jumping");
+            this.jump(); SoundManager.playSound("jumping");
         }
     }
 
-    updateCamera() {
-        this.world.camera_x = -this.x + 100;
-    }
+    updateCamera() { this.world.camera_x = -this.x + 100; }
 
     updateAnimation() {
         if (this.isDead()) this.handleDeath();
@@ -141,9 +125,8 @@ class Character extends MovableObject {
     }
 
     handleWalkingAnimation() {
-        if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
+        if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)
             this.playAnimation(this.IMAGES_WALKING);
-        }
     }
 
     handleDeath() {
@@ -157,23 +140,44 @@ class Character extends MovableObject {
         }
     }
 
-    jump() {
-        this.speedY = 30;
+    jump() { 
+        this.speedY = 33; 
     }
 
     checkCollisionWithEnemies() {
-        this.world.enemies.forEach(enemy => {
-            if (this.isColliding(enemy) && !this.isHurt()) {
-                this.hit();
-                this.world.statusBar.setPersentageHealth(this.energy); 
+        this.world.enemies.forEach((enemy, i) => {
+            if (this.isColliding(enemy)) {
+                if (this.isStomping(enemy)) this.handleStomp(enemy, i);
+                else if (!this.isHurt()) this.takeDamage();
             }
         });
+        let boss = this.world.level.boss;
+        if (boss && this.isColliding(boss)) {
+            if (this.isStomping(boss)) this.handleBossStomp(boss);
+            else if (!this.isHurt()) this.takeDamage();
+        }
     }
 
-    checkCollisionWithEndboss() {
-        if (this.world.level.boss && this.isColliding(this.world.level.boss) && !this.isHurt()) {
-            this.hit();
-            this.world.statusBar.setPersentageHealth(this.energy);
-        }
+    isStomping(enemy) {
+        return this.speedY < 0 &&
+            this.y + this.height <= enemy.y + 20 &&
+            this.x + this.width > enemy.x &&
+            this.x < enemy.x + enemy.width;
+    }
+
+    handleStomp(enemy, index) {
+        enemy.die();
+        this.world.enemies.splice(index, 1);
+        this.speedY = 20;
+    }
+
+    handleBossStomp(boss) {
+        boss.hitByBottle();
+        this.speedY = 20;
+    }
+
+    takeDamage() {
+        this.hit();
+        this.world.statusBar.setPersentageHealth(this.energy);
     }
 }

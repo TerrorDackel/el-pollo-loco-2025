@@ -23,6 +23,10 @@ class ChickenBig extends MovableObject {
         this.animate();
         this.moveLeft();
         this.debugMode = true; // Aktiviert den roten Rahmen für Gegner
+        this.offsetTop = -10; /* reduziert die hitbox nach oben */
+        this.offsetBottom = -10; /* reduziert die hitbox nach unten */
+        this.offsetLeft = -10; /* macht die hitbox schmaler (links) */
+        this.offsetRight = -10; /* macht die hitbox schmaler (rechts) */
     }
 
     /* methode die das enemy sterben lässt */

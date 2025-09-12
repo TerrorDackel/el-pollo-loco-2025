@@ -67,36 +67,41 @@ class ThrowableObjects extends MovableObject {
     }
 
     checkBottleEnemyCollision() {
-        if (!this.world || !this.world.enemies) return
-        this.world.enemies.forEach((enemy, index) => {
-            if (this.isBottleColliding(enemy)) {
-                if (enemy instanceof Endboss) {
-                    enemy.hitByBottle()
-                } else {
-                    enemy.die()
-                    this.world.enemies.splice(index, 1)
-                }
-                let bottleIndex = this.world.throwableObjects.indexOf(this)
-                if (bottleIndex !== -1) {
-                    this.world.throwableObjects.splice(bottleIndex, 1)
+        if (!this.world) return
+
+        if (this.world.enemies && this.world.enemies.length) {
+            for (let i = 0; i < this.world.enemies.length; i++) {
+                const enemy = this.world.enemies[i]
+                if (this.isBottleColliding(enemy)) {
+                    if (typeof enemy.hitByBottle === "function") enemy.hitByBottle()
+                    else if (typeof enemy.die === "function") enemy.die()
+                    this.world.enemies.splice(i, 1)
+                    const bi = this.world.throwableObjects.indexOf(this)
+                    if (bi !== -1) this.world.throwableObjects.splice(bi, 1)
+                    return
                 }
             }
-        })
+        }
+
+        const boss = this.world.level?.boss
+        if (boss && !boss.isDead && this.isBottleColliding(boss)) {
+            boss.hitByBottle()
+            const bi = this.world.throwableObjects.indexOf(this)
+            if (bi !== -1) this.world.throwableObjects.splice(bi, 1)
+        }
     }
 
     isBottleColliding(enemy) {
-        let collides =
-            this.x + this.width > enemy.x &&
-            this.x < enemy.x + enemy.width &&
-            this.y + this.height > enemy.y &&
-            this.y < enemy.y + enemy.height
+        const oL = enemy.offsetLeft || 0
+        const oR = enemy.offsetRight || 0
+        const oT = enemy.offsetTop || 0
+        const oB = enemy.offsetBottom || 0
 
-        if (collides) {
-            console.log("KOLLISION erkannt: Bottle=", this, "Enemy=", enemy)
-        } else {
-            console.log("Keine Kollision: Bottle=", {x: this.x, y: this.y, w: this.width, h: this.height}, 
-                        "Enemy=", {x: enemy.x, y: enemy.y, w: enemy.width, h: enemy.height})
-        }
+        const collides =
+            (this.x + this.width) >= (enemy.x + oL) &&
+            (this.x) <= (enemy.x + enemy.width - oR) &&
+            (this.y + this.height) >= (enemy.y + oT) &&
+            (this.y) <= (enemy.y + enemy.height - oB)
 
         return collides
     }

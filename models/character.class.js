@@ -68,6 +68,7 @@ class Character extends MovableObject {
 
     animationInterval;
     collectedBottles = 0;
+    prevBottom = 0;
 
     constructor() {
         super().loadImage(this.IMAGES_WALKING[0]);
@@ -84,6 +85,7 @@ class Character extends MovableObject {
         this.offsetRight = 10;
 
         this.energy = 5;
+        this.prevBottom = this.getBox(this).bottom;
     }
 
     setWorld(world) { this.world = world; }
@@ -95,6 +97,7 @@ class Character extends MovableObject {
             this.updateCamera();
             this.updateAnimation();
             this.checkCollisionWithEnemies();
+            this.prevBottom = this.getBox(this).bottom; // für nächste Frame
         }, 1000 / 30);
     }
 
@@ -140,39 +143,46 @@ class Character extends MovableObject {
         }
     }
 
-    jump() { 
-        this.speedY = 33; 
+    jump() { this.speedY = 33; }
+
+    getBox(o) {
+        const l = o.x + (o.offsetLeft || 0);
+        const r = o.x + o.width - (o.offsetRight || 0);
+        const t = o.y + (o.offsetTop || 0);
+        const b = o.y + o.height - (o.offsetBottom || 0);
+        return { left: l, right: r, top: t, bottom: b };
+    }
+
+    isStomping(enemy) {
+        const meNow = this.getBox(this);
+        const mePrevBottom = this.prevBottom;
+        const en = this.getBox(enemy);
+        const xOverlap = meNow.right > en.left && meNow.left < en.right;
+        const crossedTopFromAbove = mePrevBottom <= en.top && meNow.bottom >= en.top;
+        return this.speedY < 0 && xOverlap && crossedTopFromAbove;
     }
 
     checkCollisionWithEnemies() {
         this.world.enemies.forEach((enemy, i) => {
-            if (this.isColliding(enemy)) {
-                if (this.isStomping(enemy)) this.handleStomp(enemy, i);
-                else if (!this.isHurt()) this.takeDamage();
-            }
+            if (this.isStomping(enemy)) this.handleStomp(enemy, i);
+            else if (this.isColliding(enemy) && !this.isHurt()) this.takeDamage();
         });
-        let boss = this.world.level.boss;
-        if (boss && this.isColliding(boss)) {
+
+        const boss = this.world.level.boss;
+        if (boss) {
             if (this.isStomping(boss)) this.handleBossStomp(boss);
-            else if (!this.isHurt()) this.takeDamage();
+            else if (this.isColliding(boss) && !this.isHurt()) this.takeDamage();
         }
     }
 
-    isStomping(enemy) {
-        return this.speedY < 0 &&
-            this.y + this.height <= enemy.y + 20 &&
-            this.x + this.width > enemy.x &&
-            this.x < enemy.x + enemy.width;
-    }
-
     handleStomp(enemy, index) {
-        enemy.die();
+        if (typeof enemy.die === "function") enemy.die();
         this.world.enemies.splice(index, 1);
         this.speedY = 20;
     }
 
     handleBossStomp(boss) {
-        boss.hitByBottle();
+        if (typeof boss.hitByBottle === "function") boss.hitByBottle();
         this.speedY = 20;
     }
 

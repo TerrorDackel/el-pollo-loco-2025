@@ -11,6 +11,7 @@ class World {
     coins = []
     score = 0
     bottles = []
+    spacePressed = false // merkt, ob SPACE bereits gedrückt war
 
     constructor(canvas, keyboard) {
         this.canvas = canvas
@@ -85,7 +86,9 @@ class World {
     }
 
     checkThrowObjects() {
-        if (this.keyboard.SPACE && this.character.collectedBottles > 0) {
+        // prüfe ob SPACE jetzt gedrückt ist und vorher nicht
+        if (this.keyboard.SPACE && !this.spacePressed && this.character.collectedBottles > 0) {
+            this.spacePressed = true
             let bottle = new ThrowableObjects(this.character.x + 100, this.character.y + 100, this)
             this.throwableObjects.push(bottle)
             SoundManager.playSound("whisleBottle")
@@ -94,6 +97,10 @@ class World {
             if (this.level.boss && bottle.isBottleColliding(this.level.boss)) {
                 this.level.boss.hitByBottle()
             }
+        }
+        // wenn SPACE losgelassen wird, zurücksetzen
+        if (!this.keyboard.SPACE) {
+            this.spacePressed = false
         }
     }
 

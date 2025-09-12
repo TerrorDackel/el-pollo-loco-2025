@@ -49,7 +49,7 @@ class Endboss extends MovableObject {
         this.loadImages(this.IMAGES_ANGRY)
         this.loadImages(this.IMAGES_DEAD)
         this.x = 3400
-        this.y = 10
+        this.y = 0
         this.speed = 0.1
         this.debugMode = true
         this.animate()
@@ -114,8 +114,6 @@ class Endboss extends MovableObject {
         }
         SoundManager.playSound("endbossDead")
         SoundManager.stopBackground()
-        // optional → wieder normale Musik starten:
-        // SoundManager.playBackground("music")
 
         let intervalId = setInterval(() => {
             this.playAnimation(this.IMAGES_DEAD)

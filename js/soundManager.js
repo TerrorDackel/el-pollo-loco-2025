@@ -1,6 +1,7 @@
 class SoundManager {
     static sounds = {
         music: new Audio("./audio/6_backgroundsounds/1.mp3"),
+        bossMusic: new Audio("./audio/6_backgroundsounds/finalBoss.mp3"),
         walking: new Audio("./audio/1_walking/walking.mp3"),
         jumping: new Audio("./audio/2_jump/maleShortJump.mp3"),
         dead: new Audio("./audio/9_lost/man_dying.mp3"),
@@ -24,6 +25,7 @@ class SoundManager {
 
     static volumeSettings = {
         music: 0.35,
+        bossMusic: 0.4,
         walking: 0.15,
         jumping: 0.35,
         dead: 0.3,
@@ -37,8 +39,8 @@ class SoundManager {
         chickenBig: 0.25,
         chicken: 0.25,
         chickenSmallDead: 0.25,
-        chickenBigDead: 0.25,
-        chickenDead: 0.25,
+        chickenBigDead: 0.35,
+        chickenDead: 0.35,
         endboss: 0.35,
         endbossDead: 0.35
     };
@@ -49,6 +51,7 @@ class SoundManager {
             sound.muted = this.isMuted;
             if (!this.isMuted) {
                 sound.volume = this.volumeSettings[name] || 0.2;
+                if (name === "music" || name === "bossMusic") return;
                 sound.play().catch(() => {});
             } else {
                 sound.pause();
@@ -58,6 +61,7 @@ class SoundManager {
         if (soundIcon) {
             soundIcon.src = this.isMuted ? "imgs/logos/musicOff.png" : "imgs/logos/musicOn.png";
         }
+        if (!this.isMuted) this.playBackground("music");
     }
 
     static playSound(soundName) {
@@ -80,6 +84,25 @@ class SoundManager {
         Object.values(this.sounds).forEach(sound => {
             sound.pause();
             sound.currentTime = 0;
+        });
+    }
+
+    static playBackground(type = "music") {
+        if (this.isMuted) return;
+        this.stopBackground();
+        const sound = this.sounds[type];
+        if (sound) {
+            sound.loop = true;
+            sound.volume = this.volumeSettings[type] || 0.3;
+            sound.play().catch(() => {});
+        }
+    }
+
+    static stopBackground() {
+        ["music", "bossMusic"].forEach(name => {
+            let snd = this.sounds[name];
+            snd.pause();
+            snd.currentTime = 0;
         });
     }
 }

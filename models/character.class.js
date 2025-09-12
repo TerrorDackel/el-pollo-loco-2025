@@ -82,7 +82,7 @@ class Character extends MovableObject {
         this.offsetBottom = 10;
         this.offsetLeft = 10;
         this.offsetRight = 10;
-        
+
         this.energy = 5;
     }
 

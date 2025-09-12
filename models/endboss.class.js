@@ -61,6 +61,8 @@ class Endboss extends MovableObject {
 
     letEndbossTouch() {
         this.contactWithCharacter = true
+        SoundManager.stopBackground()
+        SoundManager.playBackground("bossMusic")
     }
 
     endbossMoveLeft() {
@@ -111,6 +113,9 @@ class Endboss extends MovableObject {
             this.world.statusBar.setPersentageEndboss(0)
         }
         SoundManager.playSound("endbossDead")
+        SoundManager.stopBackground()
+        // optional → wieder normale Musik starten:
+        // SoundManager.playBackground("music")
 
         let intervalId = setInterval(() => {
             this.playAnimation(this.IMAGES_DEAD)

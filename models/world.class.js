@@ -25,6 +25,10 @@ class World {
         this.draw()
 
         this.character.animate()
+
+        if (!SoundManager.isMuted) {
+            SoundManager.playBackground("music")
+        }
     }
 
     setWorld() {
@@ -42,6 +46,21 @@ class World {
             if (this.character && typeof this.character.checkCollisionWithEnemies === "function") {
                 this.character.checkCollisionWithEnemies()
             }
+
+            if (this.level.boss) {
+                const boss = this.level.boss
+                const d = Math.abs(this.character.x - boss.x)
+
+                if (d < 600 && !boss.contactWithCharacter) {
+                    boss.letEndbossTouch()
+                }
+
+                if (d >= 800 && boss.contactWithCharacter && !boss.isDead) {
+                    boss.contactWithCharacter = false
+                    SoundManager.stopBackground()
+                    SoundManager.playBackground("music")
+                }
+            }
         }, 50)
     }
 
@@ -57,7 +76,6 @@ class World {
     }
 
     restartGame() {
-
         clearAllIntervals()
         Object.assign(this, new World(this.canvas, this.keyboard))
     }
@@ -68,7 +86,7 @@ class World {
 
     checkThrowObjects() {
         if (this.keyboard.SPACE && this.character.collectedBottles > 0) {
-            let bottle = new ThrowableObjects(this.character.x + 100, this.character.y + 100, this) // <– world übergeben
+            let bottle = new ThrowableObjects(this.character.x + 100, this.character.y + 100, this)
             this.throwableObjects.push(bottle)
             SoundManager.playSound("whisleBottle")
             this.character.collectedBottles--

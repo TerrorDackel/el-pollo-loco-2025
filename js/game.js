@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function init() {
+    // nur beim (Re)Start alte Timer killen – vor dem Erzeugen der Welt!
     clearAllIntervals();
     canvas = document.getElementById("canvas");
     world = new World(canvas, keyboard);
@@ -30,11 +31,15 @@ function resetGame() {
     removeEventListeners();
     world = null;
     world = new World(canvas, keyboard);
-
 }
 
+// EINDEUTIGE Implementierung – keine Doppeldefinition mehr
 function clearAllIntervals() {
-    for (let i = 1; i < 9999; i++) window.clearInterval(i);
+    const highestId = setTimeout(() => {}, 0);
+    for (let id = 0; id <= highestId; id++) {
+        clearTimeout(id);
+        clearInterval(id);
+    }
 }
 
 function stopAnimations() {
@@ -114,6 +119,7 @@ function toggleMusic() {
     musicOn = !musicOn;
 }
 
+/* ---------------- KEY EVENTS ---------------- */
 window.addEventListener("keydown", (e) => {
     if (gamePaused && e.keyCode !== 80) return;
 
@@ -123,8 +129,11 @@ window.addEventListener("keydown", (e) => {
         case 38: keyboard.UP = true; break;
         case 40: keyboard.DOWN = true; break;
         case 32:
-            keyboard.SPACE = true;
-            world.checkThrowObjects();
+            // EIN Wurf pro KeyDown
+            if (!keyboard.SPACE) {
+                keyboard.SPACE = true;
+                if (world) world.tryThrowObject();
+            }
             break;
         case 68: keyboard.D = true; break;
         case 70: keyboard.F = true; break;
@@ -133,12 +142,8 @@ window.addEventListener("keydown", (e) => {
         case 45: keyboard.ZERO = true; break;
         case 77: keyboard.M = true; break;
         case 80: togglePause(); break;
-        case 90:
-            if (!musicOn) toggleMusic();
-            break;
-        case 84:
-            if (musicOn) toggleMusic();
-            break;
+        case 90: if (!musicOn) toggleMusic(); break;
+        case 84: if (musicOn) toggleMusic(); break;
     }
 });
 
@@ -148,7 +153,7 @@ window.addEventListener("keyup", (e) => {
         case 37: keyboard.LEFT = false; break;
         case 38: keyboard.UP = false; break;
         case 40: keyboard.DOWN = false; break;
-        case 32: keyboard.SPACE = false; break;
+        case 32: keyboard.SPACE = false; break; // Reset → neuer Wurf möglich
         case 68: keyboard.D = false; break;
         case 77: keyboard.M = false; break;
         case 74: keyboard.J = false; break;
@@ -157,24 +162,17 @@ window.addEventListener("keyup", (e) => {
         case 80: keyboard.PAUSE = false; break;
     }
 });
+/* -------------------------------------------- */
 
 function togglePause() {
     if (!gamePaused) {
         gamePaused = true;
+        // keine clearAllIntervals() – sonst frieren Gegner ein
         world.pauseGame();
-        clearAllIntervals(); 
         drawPauseScreen();
     } else if (!countdownActive) {
         clearPauseScreen();
         startCountdown();
-    }
-}
-
-function clearAllIntervals() {
-    let highestId = setTimeout(() => {}, 0);
-    for (let i = 0; i < highestId; i++) {
-        clearTimeout(i);
-        clearInterval(i);
     }
 }
 

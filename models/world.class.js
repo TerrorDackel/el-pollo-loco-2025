@@ -1,4 +1,4 @@
-class World {
+class World {  
     character = new Character()
     level = level1
     canvas
@@ -11,7 +11,6 @@ class World {
     coins = []
     score = 0
     bottles = []
-    spacePressed = false
 
     constructor(canvas, keyboard) {
         this.canvas = canvas
@@ -35,7 +34,26 @@ class World {
     setWorld() {
         this.character.world = this
         this.enemies = this.level.enemies
-        if (this.level.boss) this.level.boss.setWorld(this)
+
+        // WICHTIG: Nach dem globalen clearAllIntervals() beim init()
+        // müssen die bereits instanziierten Gegner ihre AI/Intervals
+        // neu starten. Guard verhindert doppelte Starts.
+        this.enemies.forEach(e => {
+            e.setWorld?.(this)
+            if (!e._aiStarted && typeof e.animate === "function") {
+                e._aiStarted = true
+                e.animate()
+            }
+        })
+
+        if (this.level.boss) {
+            const b = this.level.boss
+            b.setWorld(this)
+            if (!b._aiStarted && typeof b.animate === "function") {
+                b._aiStarted = true
+                b.animate()
+            }
+        }
     }
 
     run() {
@@ -43,7 +61,6 @@ class World {
             if (!this.running) return
             this.checkCollisionCoins()
             this.checkCollisionBottles()
-            this.checkThrowObjects()
             if (this.character && typeof this.character.checkCollisionWithEnemies === "function") {
                 this.character.checkCollisionWithEnemies()
             }
@@ -85,10 +102,8 @@ class World {
         return [new Chicken(), new ChickenBig(), new Chickensmall()]
     }
 
-    checkThrowObjects() {
-        // prüfe ob SPACE jetzt gedrückt ist und vorher nicht
-        if (this.keyboard.SPACE && !this.spacePressed && this.character.collectedBottles > 0) {
-            this.spacePressed = true
+    tryThrowObject() {
+        if (this.character.collectedBottles > 0) {
             let bottle = new ThrowableObjects(this.character.x + 100, this.character.y + 100, this)
             this.throwableObjects.push(bottle)
             SoundManager.playSound("whisleBottle")
@@ -97,10 +112,6 @@ class World {
             if (this.level.boss && bottle.isBottleColliding(this.level.boss)) {
                 this.level.boss.hitByBottle()
             }
-        }
-        // wenn SPACE losgelassen wird, zurücksetzen
-        if (!this.keyboard.SPACE) {
-            this.spacePressed = false
         }
     }
 

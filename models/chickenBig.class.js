@@ -4,7 +4,6 @@ class ChickenBig extends MovableObject {
     isDead = false;
 
     IMAGES_WALKING = [
-        /* stripe bilder vom Boss chicken wie es läuft*/
         "/imgs/4_enemie_boss_chicken/1_walk/G1.png",
         "/imgs/4_enemie_boss_chicken/1_walk/G2.png",
         "/imgs/4_enemie_boss_chicken/1_walk/G3.png",
@@ -22,44 +21,40 @@ class ChickenBig extends MovableObject {
         this.speed = 1;
         this.animate();
         this.moveLeft();
-        this.debugMode = true; // Aktiviert den roten Rahmen für Gegner
-        this.offsetTop = -10; /* reduziert die hitbox nach oben */
-        this.offsetBottom = -10; /* reduziert die hitbox nach unten */
-        this.offsetLeft = -10; /* macht die hitbox schmaler (links) */
-        this.offsetRight = -10; /* macht die hitbox schmaler (rechts) */
+        this.debugMode = true;
+        this.offsetTop = -10;
+        this.offsetBottom = -10;
+        this.offsetLeft = -10;
+        this.offsetRight = -10;
     }
 
-    /* methode die das enemy sterben lässt */
     die() {
-        this.isDead = true; /* setzt den status des chickens auf "tot" */
-        this.playAnimation(this.IMAGES_DEAD); /* spielt die todesanimation */
-        SoundManager.playSound("chickenDead"); /* spielt den todes-sound */
-        setTimeout(
-        () => this.removeFromGame(),
-        500
-        ); /* entfernt den gegner nach 500ms */
+        this.isDead = true;
+        this.playAnimation(this.IMAGES_DEAD);
+        SoundManager.playSound("chickenDead");
+        setTimeout(() => this.removeFromGame(), 500);
     }
 
     removeFromGame() {
-        let index = this.world?.level?.enemies.indexOf(this); // Welt-Check hinzugefügt
+        let index = this.world?.level?.enemies.indexOf(this);
         if (index > -1) {
-        this.world.level.enemies.splice(index, 1);
+            this.world.level.enemies.splice(index, 1);
         }
     }
 
     animate() {
         this.walkingInterval = setInterval(() => {
-        if (!this.isDead) {
-            this.moveLeft();
-        }
+            if (!this.isDead) {
+                this.moveLeft();
+            }
         }, 1000 / 60);
 
         this.animationInterval = setInterval(() => {
-        if (this.isDead) {
-            this.playAnimation(this.IMAGES_DEAD);
-        } else {
-            this.playAnimation(this.IMAGES_WALKING);
-        }
+            if (this.isDead) {
+                this.playAnimation(this.IMAGES_DEAD);
+            } else {
+                this.playAnimation(this.IMAGES_WALKING);
+            }
         }, 100);
     }
 }

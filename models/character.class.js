@@ -97,7 +97,7 @@ class Character extends MovableObject {
             this.updateCamera();
             this.updateAnimation();
             this.checkCollisionWithEnemies();
-            this.prevBottom = this.getBox(this).bottom; // für nächste Frame
+            this.prevBottom = this.getBox(this).bottom;
         }, 1000 / 30);
     }
 

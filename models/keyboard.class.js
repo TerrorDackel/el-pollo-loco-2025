@@ -4,6 +4,7 @@ class Keyboard {
     UP = false; /*springen*/
     DOWN = false; /*unbenutzt*/
     SPACE = false; /*flasche werfen*/
+    SPACE_PRESSED = false; /* verhindert Dauerfeuer*/
     D = false;
     F = false; /*fullscreen ein/ aus */
     P = false; /*P und PAUSE = pause*/

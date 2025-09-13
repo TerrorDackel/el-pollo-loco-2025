@@ -11,7 +11,7 @@ class World {
     coins = []
     score = 0
     bottles = []
-    spacePressed = false // merkt, ob SPACE bereits gedrückt war
+    spacePressed = false
 
     constructor(canvas, keyboard) {
         this.canvas = canvas

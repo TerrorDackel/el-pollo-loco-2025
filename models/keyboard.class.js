@@ -6,7 +6,7 @@ class Keyboard {
     SPACE = false; /*flasche werfen*/
     D = false;
     F = false; /*fullscreen ein/ aus */
-    P = false;
+    P = false; /*P und PAUSE = pause*/
     PAUSE = false; /*P und PAUSE = pause*/
     T = false; /* musik aus*/
     Z = false; /* musik an*/

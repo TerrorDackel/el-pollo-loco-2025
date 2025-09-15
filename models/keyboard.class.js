@@ -1,21 +1,62 @@
+/**
+ * Represents the keyboard input state for the game.
+ * Each property indicates whether a specific key is currently pressed.
+ */
 class Keyboard {
-    LEFT = false; /*nach links laufen*/
-    RIGHT = false; /*nach rechts laufen*/
-    UP = false; /*springen*/
-    DOWN = false; /*unbenutzt*/
-    SPACE = false; /*flasche werfen*/
-    SPACE_PRESSED = false; /* verhindert Dauerfeuer*/
+    /** @type {boolean} Move left */
+    LEFT = false;
+
+    /** @type {boolean} Move right */
+    RIGHT = false;
+
+    /** @type {boolean} Jump */
+    UP = false;
+
+    /** @type {boolean} Down (unused) */
+    DOWN = false;
+
+    /** @type {boolean} Throw bottle */
+    SPACE = false;
+
+    /** @type {boolean} Prevents autofire for SPACE */
+    SPACE_PRESSED = false;
+
+    /** @type {boolean} Key D (custom use) */
     D = false;
-    F = false; /*fullscreen ein/ aus */
-    P = false; /*P und PAUSE = pause*/
-    PAUSE = false; /*P und PAUSE = pause*/
-    T = false; /* musik aus*/
-    Z = false; /* musik an*/
-    INFO = false; /* information aufrufen unterm spiel muss auch pause aufgerufen werden*/
-    MENU = false; /* aufrufen des menüs*/
+
+    /** @type {boolean} Toggle fullscreen */
+    F = false;
+
+    /** @type {boolean} Pause key (P) */
+    P = false;
+
+    /** @type {boolean} Pause flag */
+    PAUSE = false;
+
+    /** @type {boolean} Turn music off (T) */
+    T = false;
+
+    /** @type {boolean} Turn music on (Z) */
+    Z = false;
+
+    /** @type {boolean} Show information (also triggers pause) */
+    INFO = false;
+
+    /** @type {boolean} Open menu */
+    MENU = false;
+
+    /** @type {boolean} Enter key */
     ENTER = false;
+
+    /** @type {boolean} Key E (custom use) */
     E = false;
+
+    /** @type {boolean} Escape key */
     ESC = false;
-    J = false; /* nochmal spielen j für ja*/
-    N = false; /* nochmal spielen n für nein*/
+
+    /** @type {boolean} Play again (yes) */
+    J = false;
+
+    /** @type {boolean} Play again (no) */
+    N = false;
 }

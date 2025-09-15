@@ -1,7 +1,10 @@
+/**
+ * Represents a collectible coin in the game world.
+ * Extends DrawableObject to be drawn and animated.
+ */
 class Coins extends DrawableObject {
-    /* bildquellen für die animation der münze */
     IMAGES_COINS = [
-        "./imgs/8_coin/Gold_1.png" /* pfad zum ersten bild der münzen-animation */,
+        "./imgs/8_coin/Gold_1.png",
         "./imgs/8_coin/Gold_2.png",
         "./imgs/8_coin/Gold_3.png",
         "./imgs/8_coin/Gold_4.png",
@@ -10,119 +13,113 @@ class Coins extends DrawableObject {
         "./imgs/8_coin/Gold_7.png",
         "./imgs/8_coin/Gold_8.png",
         "./imgs/8_coin/Gold_9.png",
-        "./imgs/8_coin/Gold_10.png",
+        "./imgs/8_coin/Gold_10.png"
     ];
 
-    /* eigenschaften der münze */
-    x = 150; /* legt die standard-x-position der münze fest */
-    y = 150; /* legt die standard-y-position der münze fest */
-    width = 25; /* setzt die breite der münze */
-    height = 25; /* setzt die höhe der münze */
-    rotation = 0; /* winkel der drehung der münze */
-    currentImage = 0; /* speichert den index des aktuell angezeigten animationsbildes */
-    images = []; /* speichert die geladenen bilder der animation */
-    speedY = 20; /* geschwindigkeit der münze entlang der y-achse */
-    acceleration = 3; /* beschleunigung der münze durch schwerkraft */
-    loaded = false; /* status, ob die bilder der münze vollständig geladen sind */
-    loadImagePromises = []; /* speichert die promises für das laden der bilder */
+    x = 150;
+    y = 150;
+    width = 25;
+    height = 25;
+    rotation = 0;
+    currentImage = 0;
+    images = [];
+    speedY = 20;
+    acceleration = 3;
+    loaded = false;
+    loadImagePromises = [];
 
-    /* konstruktor lädt die bilder und startet die animation */
+    /**
+     * Creates a new Coins instance and loads its images.
+     */
     constructor() {
-        super(); /* ruft den konstruktor der elternklasse DrawableObject auf */
-
-        /* lädt die bilder und speichert die promises */
-        this.loadImagePromises = this.IMAGES_COINS.map((path) => {
-        return new Promise((resolve) => {
-            let img = new Image(); /* erstellt ein neues bildobjekt */
-            img.src = path; /* setzt den pfad des bildes */
-            img.onload = () =>
-            resolve(img); /* bestätigt, dass das bild erfolgreich geladen wurde */
-            img.onerror = () =>
-            console.error(
-                `fehler beim laden des bildes: ${path}`
-            ); /* gibt eine fehlermeldung aus, falls das bild nicht geladen werden kann */
-        });
-        });
-
-        /* wenn alle bilder geladen wurden, speichert sie das objekt und startet die animation */
-        Promise.all(this.loadImagePromises).then((images) => {
-        this.images = images; /* speichert die geladenen bilder */
-        this.currentImage = 0; /* setzt das erste bild als standard */
-        this.loaded = true; /* markiert die münze als geladen */
-        this.animate(); /* startet die animation der münze */
-        });
+        super();
+        this.loadAllImages();
+        this.initAnimation();
     }
 
-    /* zeichnet die münze auf dem canvas */
-    draw(ctx) {
-        if (this.loaded && this.images.length > 0) {
-        /* überprüft, ob die bilder geladen wurden */
-        ctx.save(); /* speichert den aktuellen zustand des canvas */
-        ctx.translate(
-            this.x + this.width / 2,
-            this.y + this.height / 2
-        ); /* verschiebt die münze, damit die drehung um die mitte erfolgt */
-
-        ctx.drawImage(
-            this.images[this.currentImage] /* aktuelles bild der animation */,
-            -this.width / 2 /* zentriert das bild horizontal */,
-            -this.height / 2 /* zentriert das bild vertikal */,
-            this.width /* breite des bildes */,
-            this.height /* höhe des bildes */
-        ); /* zeichnet die münze auf dem canvas */
-        ctx.restore(); /* stellt den vorherigen canvas-zustand wieder her */
-        this.drawGreenFrame(ctx); /* zeichnet einen grünen rahmen um die münze */
-        // console.log(
-        //   "drawGreenFrame für Coin aufgerufen",
-        //   this
-        // ); /* debug ausgabe */
-        }
-    }
-
-    /* animiert die münze durch wechseln der bilder */
-    animate() {
-        setInterval(() => {
-        if (this.loaded && this.images.length > 0) {
-            /* prüft, ob die animation bereit ist */
-            this.currentImage =
-            (this.currentImage + 1) %
-            this.images.length; /* wechselt das bild zur nächsten animation */
-        }
-        }, 200); /* wechselt das bild alle 200 millisekunden */
-    }
-
-    /* prüft, ob die münze mit einem anderen objekt kollidiert */
-    isColliding(collectableObject) {
-        return (
-        this.x + this.width >
-            collectableObject.x /* prüft, ob die linke seite der münze die rechte des objekts überschneidet */ &&
-        this.x <
-            collectableObject.x +
-            collectableObject.width /* prüft, ob die rechte seite der münze die linke des objekts überschneidet */ &&
-        this.y + this.height >
-            collectableObject.y /* prüft, ob die obere seite der münze die untere des objekts überschneidet */ &&
-        this.y <
-            collectableObject.y +
-            collectableObject.height /* prüft, ob die untere seite der münze die obere des objekts überschneidet */
+    /** Prepares image promises for all coin frames. */
+    loadAllImages() {
+        this.loadImagePromises = this.IMAGES_COINS.map((path) =>
+            new Promise((resolve) => {
+                const img = new Image();
+                img.src = path;
+                img.onload = () => resolve(img);
+                img.onerror = () => console.error(`Error loading image: ${path}`);
+            })
         );
     }
 
-    /* überprüft kollisionen zwischen character und münzen */
-    checkCollisionCoins() {
-        this.coins.forEach((coin, index) => {
-        if (this.character.isColliding(coin)) {
-            /* falls eine kollision erkannt wird */
-            SoundManager.playSound("coin"); /* spielt den sammel-sound ab */
-            this.coins.splice(index, 1); /* entfernt die münze aus dem array */
-            this.statusBar.setPersentageCoins(
-            this.score++
-            ); /* aktualisiert die anzeige der gesammelten münzen */
-        }
+    /** Resolves all images and starts animation when loaded. */
+    initAnimation() {
+        Promise.all(this.loadImagePromises).then((images) => {
+            this.images = images;
+            this.currentImage = 0;
+            this.loaded = true;
+            this.animate();
         });
     }
 
-    /* stellt sicher, dass keine fehler durch fehlende drawFrame-methode auftreten */
-    drawFrame(ctx) {
-        /* diese methode wird für andere objekte benötigt, aber für coins nicht verwendet */
+    /**
+     * Draws the coin on the canvas.
+     * @param {CanvasRenderingContext2D} ctx - The drawing context.
+     */
+    draw(ctx) {
+        if (!this.loaded || this.images.length === 0) return;
+        ctx.save();
+        ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+        ctx.drawImage(
+            this.images[this.currentImage],
+            -this.width / 2,
+            -this.height / 2,
+            this.width,
+            this.height
+        );
+        ctx.restore();
+        this.drawGreenFrame(ctx);
     }
+
+    /** Animates the coin by cycling through its images. */
+    animate() {
+        setInterval(() => {
+            if (this.loaded && this.images.length > 0) {
+                this.currentImage = (this.currentImage + 1) % this.images.length;
+            }
+        }, 200);
+    }
+
+    /**
+     * Checks if this coin collides with another object.
+     * @param {DrawableObject} collectableObject - The object to check collision against.
+     * @returns {boolean} True if colliding, otherwise false.
+     */
+    isColliding(collectableObject) {
+        return (
+            this.x + this.width > collectableObject.x &&
+            this.x < collectableObject.x + collectableObject.width &&
+            this.y + this.height > collectableObject.y &&
+            this.y < collectableObject.y + collectableObject.height
+        );
+    }
+
+    /** Checks and handles collisions between the character and coins. */
+    checkCollisionCoins() {
+        this.coins.forEach((coin, index) => {
+            if (this.character.isColliding(coin)) {
+                this.collectCoin(index);
+            }
+        });
+    }
+
+    /**
+     * Handles the collection of a coin.
+     * @param {number} index - The index of the coin to remove.
+     */
+    collectCoin(index) {
+        SoundManager.playSound("coin");
+        this.coins.splice(index, 1);
+        this.statusBar.setPersentageCoins(this.score++);
+    }
+
+    /** Empty method to avoid missing drawFrame errors. */
+    drawFrame(ctx) { /* not used for coins */ }
 }

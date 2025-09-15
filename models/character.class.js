@@ -1,3 +1,7 @@
+/**
+ * Represents the main character controlled by the player.
+ * Extends MovableObject to provide movement, collision and animation.
+ */
 class Character extends MovableObject {
     height = 300;
     width = 150;
@@ -25,7 +29,7 @@ class Character extends MovableObject {
         "./imgs/2_character_pepe/1_idle/long_idle/I-17.png",
         "./imgs/2_character_pepe/1_idle/long_idle/I-18.png",
         "./imgs/2_character_pepe/1_idle/long_idle/I-19.png",
-        "./imgs/2_character_pepe/1_idle/long_idle/I-20.png",
+        "./imgs/2_character_pepe/1_idle/long_idle/I-20.png"
     ];
 
     IMAGES_WALKING = [
@@ -34,7 +38,7 @@ class Character extends MovableObject {
         "./imgs/2_character_pepe/2_walk/W-23.png",
         "./imgs/2_character_pepe/2_walk/W-24.png",
         "./imgs/2_character_pepe/2_walk/W-25.png",
-        "./imgs/2_character_pepe/2_walk/W-26.png",
+        "./imgs/2_character_pepe/2_walk/W-26.png"
     ];
 
     IMAGES_JUMPING = [
@@ -47,13 +51,13 @@ class Character extends MovableObject {
         "./imgs/2_character_pepe/3_jump/J-37.png",
         "./imgs/2_character_pepe/3_jump/J-38.png",
         "./imgs/2_character_pepe/3_jump/J-39.png",
-        "./imgs/2_character_pepe/2_walk/W-26.png",
+        "./imgs/2_character_pepe/2_walk/W-26.png"
     ];
 
     IMAGES_HURT = [
         "./imgs/2_character_pepe/4_hurt/H-41.png",
         "./imgs/2_character_pepe/4_hurt/H-42.png",
-        "./imgs/2_character_pepe/4_hurt/H-43.png",
+        "./imgs/2_character_pepe/4_hurt/H-43.png"
     ];
 
     IMAGES_DEAD = [
@@ -63,7 +67,7 @@ class Character extends MovableObject {
         "./imgs/2_character_pepe/5_dead/D-54.png",
         "./imgs/2_character_pepe/5_dead/D-55.png",
         "./imgs/2_character_pepe/5_dead/D-56.png",
-        "./imgs/2_character_pepe/5_dead/D-57.png",
+        "./imgs/2_character_pepe/5_dead/D-57.png"
     ];
 
     animationInterval;
@@ -71,21 +75,28 @@ class Character extends MovableObject {
     prevBottom = 0;
 
     constructor() {
-        super().loadImage(this.IMAGES_WALKING[0]);
+        super();
+        this.initImages();
+        this.applyGravity();
+        this.setOffsets();
+        this.energy = 5;
+        this.prevBottom = this.getBox(this).bottom;
+    }
+
+    initImages() {
+        this.loadImage(this.IMAGES_WALKING[0]);
         this.loadImages(this.IMAGES_WALKING);
         this.loadImages(this.IMAGES_JUMPING);
         this.loadImages(this.IMAGES_HURT);
         this.loadImages(this.IMAGES_IDLE);
         this.loadImages(this.IMAGES_DEAD);
-        this.applyGravity();
+    }
 
+    setOffsets() {
         this.offsetTop = 100;
         this.offsetBottom = 10;
         this.offsetLeft = 10;
         this.offsetRight = 10;
-
-        this.energy = 5;
-        this.prevBottom = this.getBox(this).bottom;
     }
 
     setWorld(world) { this.world = world; }
@@ -105,16 +116,31 @@ class Character extends MovableObject {
     resumeAnimation() { this.animate(); }
 
     handleMovement() {
+        this.handleRightMovement();
+        this.handleLeftMovement();
+        this.handleJump();
+    }
+
+    handleRightMovement() {
         if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
-            this.moveRight(); this.otherDirection = false;
+            this.moveRight();
+            this.otherDirection = false;
             SoundManager.playSound("walking");
         }
+    }
+
+    handleLeftMovement() {
         if (this.world.keyboard.LEFT && this.x > 0) {
-            this.moveLeft(); this.otherDirection = true;
+            this.moveLeft();
+            this.otherDirection = true;
             SoundManager.playSound("walking");
         }
+    }
+
+    handleJump() {
         if (this.world.keyboard.UP && !this.isAboveGround()) {
-            this.jump(); SoundManager.playSound("jumping");
+            this.jump();
+            SoundManager.playSound("jumping");
         }
     }
 
@@ -128,8 +154,9 @@ class Character extends MovableObject {
     }
 
     handleWalkingAnimation() {
-        if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)
+        if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
             this.playAnimation(this.IMAGES_WALKING);
+        }
     }
 
     handleDeath() {
@@ -146,20 +173,30 @@ class Character extends MovableObject {
     jump() { this.speedY = 33; }
 
     getBox(o) {
-        const l = o.x + (o.offsetLeft || 0);
-        const r = o.x + o.width - (o.offsetRight || 0);
-        const t = o.y + (o.offsetTop || 0);
-        const b = o.y + o.height - (o.offsetBottom || 0);
-        return { left: l, right: r, top: t, bottom: b };
+        return {
+            left: o.x + (o.offsetLeft || 0),
+            right: o.x + o.width - (o.offsetRight || 0),
+            top: o.y + (o.offsetTop || 0),
+            bottom: o.y + o.height - (o.offsetBottom || 0)
+        };
     }
 
+    /**
+     * Determines if the character stomps an enemy.
+     * Character must have been above the enemy in the previous frame
+     * and now collide with the top edge of the enemy.
+     * @param {MovableObject} enemy
+     * @returns {boolean}
+     */
     isStomping(enemy) {
         const meNow = this.getBox(this);
-        const mePrevBottom = this.prevBottom;
         const en = this.getBox(enemy);
+
         const xOverlap = meNow.right > en.left && meNow.left < en.right;
-        const crossedTopFromAbove = mePrevBottom <= en.top && meNow.bottom >= en.top;
-        return this.speedY < 0 && xOverlap && crossedTopFromAbove;
+        const wasAbove = this.prevBottom <= en.top;  // last frame above enemy
+        const hitTop = meNow.bottom >= en.top;       // now touching top
+
+        return xOverlap && wasAbove && hitTop;
     }
 
     checkCollisionWithEnemies() {
@@ -169,21 +206,25 @@ class Character extends MovableObject {
         });
 
         const boss = this.world.level.boss;
-        if (boss) {
-            if (this.isStomping(boss)) this.handleBossStomp(boss);
-            else if (this.isColliding(boss) && !this.isHurt()) this.takeDamage();
-        }
+        if (boss) this.checkCollisionWithBoss(boss);
+    }
+
+    checkCollisionWithBoss(boss) {
+        if (this.isStomping(boss)) this.handleBossStomp(boss);
+        else if (this.isColliding(boss) && !this.isHurt()) this.takeDamage();
     }
 
     handleStomp(enemy, index) {
         if (typeof enemy.die === "function") enemy.die();
         this.world.enemies.splice(index, 1);
         this.speedY = 20;
+        this.y = enemy.y - this.height;
     }
 
     handleBossStomp(boss) {
         if (typeof boss.hitByBottle === "function") boss.hitByBottle();
         this.speedY = 20;
+        this.y = boss.y - this.height;
     }
 
     takeDamage() {

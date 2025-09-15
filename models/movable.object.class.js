@@ -1,114 +1,130 @@
+/**
+ * Represents a movable object in the game world.
+ * Extends DrawableObject to provide movement, gravity, collision and states.
+ */
 class MovableObject extends DrawableObject {
-    speed = 0.25; /* grundgeschwindigkeit des objekts */
-    otherDirection = false; /* gibt an, ob das objekt in die andere richtung schaut */
-    speedY = 20; /* vertikale geschwindigkeit für sprünge oder fallbewegungen */
-    acceleration = 3; /* beschleunigung durch schwerkraft */
-    energy = 5; /* lebensenergie des objekts */
-    lastHit = 0; /* speichert den zeitpunkt des letzten treffers */
+    speed = 0.25;
+    otherDirection = false;
+    speedY = 20;
+    acceleration = 3;
+    energy = 5;
+    lastHit = 0;
 
-    /* aktiviert die schwerkraft für das objekt */
+    /**
+     * Applies gravity to the object with continuous updates.
+     */
     applyGravity() {
         setInterval(() => {
-        /* solange das objekt über dem boden ist oder sich nach oben bewegt, wird es beeinflusst */
-        if (this.isAboveGround() || this.speedY > 0) {
-            this.y -= this.speedY; // objekt bewegt sich nach oben oder fällt nach unten
-            this.speedY -= this.acceleration; // geschwindigkeit nimmt durch gravitation ab
-        }
-        }, 1000 / 25); // aktualisierung 25 mal pro sekunde
+            if (this.isAboveGround() || this.speedY > 0) {
+                this.y -= this.speedY;
+                this.speedY -= this.acceleration;
+            }
+        }, 1000 / 25);
     }
 
-    /* prüft, ob das objekt über dem boden ist */
+    /**
+     * Checks if the object is above ground.
+     * @returns {boolean} True if above ground, otherwise false.
+     */
     isAboveGround() {
-        if (this instanceof ThrowableObjects) {
-        return true; // wurfobjekte bleiben nicht auf dem boden liegen
-        } else {
-        return this.y < 100; // wenn y kleiner als 100 ist, ist das objekt über dem boden
-        }
+        if (this instanceof ThrowableObjects) return true;
+        return this.y < 100;
     }
 
-    /* prüft, ob zwei objekte kollidieren */
+    /**
+     * Checks collision between this object and another.
+     * @param {MovableObject} mo - The other object.
+     * @returns {boolean} True if colliding, otherwise false.
+     */
     isColliding(mo) {
-        return (this.x + this.width - this.offsetRight) >= (mo.x + mo.offsetLeft) && (this.x - this.offsetLeft) <= (mo.x + mo.width - mo.offsetRight) &&
-            (this.y + this.height - this.offsetBottom) >= (mo.y + mo.offsetTop) &&
-            (this.y + this.offsetTop) <= (mo.y + mo.height - mo.offsetBottom);
+        return (
+            this.x + this.width - this.offsetRight >= mo.x + mo.offsetLeft &&
+            this.x - this.offsetLeft <= mo.x + mo.width - mo.offsetRight &&
+            this.y + this.height - this.offsetBottom >= mo.y + mo.offsetTop &&
+            this.y + this.offsetTop <= mo.y + mo.height - mo.offsetBottom
+        );
     }
 
+    /**
+     * Checks if the object is idle (no movement for >3s).
+     * @returns {boolean} True if idle, otherwise false.
+     */
     isIdle() {
-        if (new Date().getTime() - this.world.keyboard.lastMove > 3000 && !this.idleTriggered) {
-        this.startIdleMode();
-        return true;
+        if (Date.now() - this.world.keyboard.lastMove > 3000 && !this.idleTriggered) {
+            this.startIdleMode();
+            return true;
         }
         return false;
     }
 
+    /** Starts idle mode and animation. */
     startIdleMode() {
         if (!this.idleTriggered) {
-        this.idleTriggered = true;
-        SoundManager.playSound("idle");
-        this.playAnimation(this.IMAGES_IDLE);
-        document.addEventListener("keydown", () => this.stopIdleMode(), {
-            once: true,
-        });
+            this.idleTriggered = true;
+            SoundManager.playSound("idle");
+            this.playAnimation(this.IMAGES_IDLE);
+            document.addEventListener("keydown", () => this.stopIdleMode(), { once: true });
         }
     }
 
+    /** Stops idle mode and resets sound. */
     stopIdleMode() {
         SoundManager.pause("idle");
         this.idle_sound.currentTime = 0;
         this.idleTriggered = false;
     }
 
-    /* wenn das objekt getroffen wird, verringert sich die lebensenergie */
+    /** Handles the object being hit and reduces energy. */
     hit() {
-        this.energy -= 1; // energie wird um 1 reduziert
-        if (this.energy < 0) {
-        this.energy = 0; // verhindert, dass energie negativ wird
-        } else {
-        this.lastHit = new Date().getTime(); // speichert den zeitpunkt des treffers
-        }
+        this.energy -= 1;
+        if (this.energy < 0) this.energy = 0;
+        else this.lastHit = Date.now();
     }
 
-    /* prüft, ob das objekt kürzlich getroffen wurde */
+    /**
+     * Checks if the object was recently hurt.
+     * @returns {boolean} True if hurt within 3s.
+     */
     isHurt() {
-        let timepassed = new Date().getTime() - this.lastHit; // zeit seit dem letzten treffer berechnen
-        timepassed = timepassed / 3000; // umrechnung in sekunden
-        return timepassed < 3; // objekt gilt als verletzt, wenn der treffer weniger als 1 sekunde her ist
+        const timepassed = (Date.now() - this.lastHit) / 3000;
+        return timepassed < 1;
     }
 
-    /* prüft, ob das objekt keine energie mehr hat */
-    isDead() {
-        return this.energy == 0; // objekt ist tot, wenn energie auf 0 gesunken ist
-    }
+    /**
+     * Checks if the object has no energy left.
+     * @returns {boolean} True if dead.
+     */
+    isDead() { return this.energy === 0; }
 
-    /* lädt mehrere bilder in den speicher (cache) */
+    /**
+     * Loads multiple images and stores them in the cache.
+     * @param {string[]} arr - Array of image paths.
+     */
     loadImages(arr) {
         arr.forEach((path) => {
-        let img = new Image();
-        img.src = path;
-        this.imageCache[path] = img; // speichert das bild im cache
+            const img = new Image();
+            img.src = path;
+            this.imageCache[path] = img;
         });
     }
 
-    /* spielt eine animation ab, indem bilder aus einem array durchlaufen werden */
+    /**
+     * Plays an animation by cycling through images.
+     * @param {string[]} images - Array of image paths.
+     */
     playAnimation(images) {
-        let i = this.currentImage % images.length; // bestimmt das aktuelle bild
-        let path = images[i]; // pfad des aktuellen bildes
-        this.img = this.imageCache[path]; // setzt das bild als aktuelles bild des objekts
-        this.currentImage++; // erhöht den index für die nächste bildanzeige
+        const i = this.currentImage % images.length;
+        const path = images[i];
+        this.img = this.imageCache[path];
+        this.currentImage++;
     }
 
-    /* bewegt das objekt nach rechts */
-    moveRight() {
-        this.x += this.speed;
-    }
+    /** Moves the object right. */
+    moveRight() { this.x += this.speed; }
 
-    /* bewegt das objekt nach links */
-    moveLeft() {
-        this.x -= this.speed;
-    }
+    /** Moves the object left. */
+    moveLeft() { this.x -= this.speed; }
 
-    /* lässt das objekt springen */
-    jump() {
-        this.speedY = 35; // setzt die sprungkraft des objekts
-    }
+    /** Makes the object jump. */
+    jump() { this.speedY = 35; }
 }

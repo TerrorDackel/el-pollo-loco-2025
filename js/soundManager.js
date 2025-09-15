@@ -47,21 +47,55 @@ class SoundManager {
 
     static toggleSound() {
         this.isMuted = !this.isMuted;
-        Object.entries(this.sounds).forEach(([name, sound]) => {
-            sound.muted = this.isMuted;
-            if (!this.isMuted) {
-                sound.volume = this.volumeSettings[name] || 0.2;
-                if (name === "music" || name === "bossMusic") return;
-                sound.play().catch(() => {});
-            } else {
-                sound.pause();
+
+        if (!this.isMuted) {
+            // Zielwerte merken und alle Volumes auf 0
+            const targetVolumes = {};
+            Object.entries(this.sounds).forEach(([name, sound]) => {
+                targetVolumes[name] = this.volumeSettings[name] || 0.2;
+                sound.muted = false;
+                sound.volume = 0;
+                if (name !== "music" && name !== "bossMusic") {
+                    sound.play().catch(() => {});
+                }
+            });
+
+            // Fade-In starten (3 Sekunden, 30 Schritte)
+            const duration = 3000;
+            const steps = 30;
+            const stepTime = duration / steps;
+            let currentStep = 0;
+
+            const fadeInterval = setInterval(() => {
+                currentStep++;
+                Object.entries(this.sounds).forEach(([name, sound]) => {
+                    const target = targetVolumes[name];
+                    if (target !== undefined) {
+                        sound.volume = Math.min(target, (currentStep / steps) * target);
+                    }
+                });
+                if (currentStep >= steps) {
+                    clearInterval(fadeInterval);
+                }
+            }, stepTime);
+
+            // Icon und Hintergrundmusik
+            let soundIcon = document.getElementById("sound-toggle");
+            if (soundIcon) {
+                soundIcon.src = "imgs/logos/musicOn.png";
             }
-        });
-        let soundIcon = document.getElementById("sound-toggle");
-        if (soundIcon) {
-            soundIcon.src = this.isMuted ? "imgs/logos/musicOff.png" : "imgs/logos/musicOn.png";
+            this.playBackground("music");
+        } else {
+            // ausschalten
+            Object.values(this.sounds).forEach(sound => {
+                sound.pause();
+                sound.muted = true;
+            });
+            let soundIcon = document.getElementById("sound-toggle");
+            if (soundIcon) {
+                soundIcon.src = "imgs/logos/musicOff.png";
+            }
         }
-        if (!this.isMuted) this.playBackground("music");
     }
 
     static playSound(soundName) {

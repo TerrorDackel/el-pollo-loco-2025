@@ -193,8 +193,8 @@ class Character extends MovableObject {
         const en = this.getBox(enemy);
 
         const xOverlap = meNow.right > en.left && meNow.left < en.right;
-        const wasAbove = this.prevBottom <= en.top;  // last frame above enemy
-        const hitTop = meNow.bottom >= en.top;       // now touching top
+        const wasAbove = this.prevBottom <= en.top;
+        const hitTop = meNow.bottom >= en.top; 
 
         return xOverlap && wasAbove && hitTop;
     }

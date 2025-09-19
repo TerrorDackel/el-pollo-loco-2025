@@ -86,6 +86,8 @@ class Endboss extends MovableObject {
         this.contactWithCharacter = true;
         SoundManager.stopBackground();
         SoundManager.playBackground("bossMusic");
+        this.isAngry = true;
+        this.playAngryAnimation();
     }
 
     /** Starts moving the boss to the left continuously. */
@@ -125,14 +127,15 @@ class Endboss extends MovableObject {
     playAngryAnimation() {
         if (this._angryAnimStarted) return;
         this._angryAnimStarted = true;
+
         this._angryAnimId = setInterval(() => {
             if (!this.isHurt && this.energy > 0 && !this.isDead) {
                 this.playAnimation(this.IMAGES_ANGRY);
-                SoundManager.playSound("endboss");
 
-                // 🔥 NEU: zufällig springen
-                if (Math.random() < 0.02) { // 2% Chance pro Tick
-                    this.jump();
+                if (!this._angrySoundPlaying) {
+                    this._angrySoundPlaying = true;
+                    SoundManager.playSound("endboss");
+                    setTimeout(() => this._angrySoundPlaying = false, 1000);
                 }
             }
         }, 200);

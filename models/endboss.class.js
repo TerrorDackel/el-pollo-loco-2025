@@ -6,7 +6,7 @@ class Endboss extends MovableObject {
     height = 260;
     width = 260;
     y = 0;
-    speed = 0.25;
+    speed = 0.35;
     energy = 5;
     isAngry = false;
     isHurt = false;
@@ -96,7 +96,7 @@ class Endboss extends MovableObject {
         this._moveIntervalStarted = true;
         this._moveIntervalId = setInterval(() => {
             if (!this.isDead) this.moveLeft();
-        }, 1000 / 50);
+        }, 1000 / 250);
     }
 
     /** Handles the boss being hit by a bottle. */
@@ -134,7 +134,6 @@ class Endboss extends MovableObject {
 
                 if (!this._angrySoundPlaying) {
                     this._angrySoundPlaying = true;
-                    SoundManager.playSound("endboss");
                     setTimeout(() => this._angrySoundPlaying = false, 1000);
                 }
             }

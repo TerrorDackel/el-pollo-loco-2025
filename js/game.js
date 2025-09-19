@@ -19,8 +19,12 @@ function setStoppableInterval(fn, time) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    showStartScreen();
+    // Startscreen ist jetzt im HTML, also KEIN showStartScreen() mehr
     addSoundIcon();
+    initMobileControls();
+    checkOrientation();
+    window.addEventListener("resize", checkOrientation);
+    window.addEventListener("orientationchange", checkOrientation);
 });
 
 /** Initialises the game. */
@@ -274,5 +278,58 @@ function enableMusic() {
     if (!musicOn) {
         musicOn = true;
         musicPlay.play();
+    }
+}
+
+/** Mobile Controls initialisieren */
+function initMobileControls() {
+    const map = [
+        { id: "btn-left", key: "LEFT" },
+        { id: "btn-right", key: "RIGHT" },
+        { id: "btn-jump", key: "UP" }
+    ];
+
+    map.forEach(({ id, key }) => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+
+        btn.addEventListener("touchstart", (e) => {
+            e.preventDefault();
+            keyboard[key] = true;
+        }, { passive: false });
+
+        btn.addEventListener("touchend", (e) => {
+            e.preventDefault();
+            keyboard[key] = false;
+        }, { passive: false });
+    });
+
+    // Flaschenwurf → direkt Spiellogik triggern
+    const throwBtn = document.getElementById("btn-throw");
+    if (throwBtn) {
+        throwBtn.addEventListener("touchstart", (e) => {
+            e.preventDefault();
+            handleSpaceKey();
+        }, { passive: false });
+        throwBtn.addEventListener("touchend", (e) => {
+            e.preventDefault();
+            keyboard.SPACE = false;
+        }, { passive: false });
+    }
+}
+
+/** Prüft, ob das Gerät im Quer- oder Hochformat ist */
+function checkOrientation() {
+    const warning = document.getElementById("rotate-warning");
+    const canvasEl = document.getElementById("canvas");
+
+    if (window.innerHeight > window.innerWidth) {
+        // Hochformat → Hinweis zeigen, Spiel verstecken
+        warning.style.display = "flex";
+        canvasEl.style.display = "none";
+    } else {
+        // Querformat → Spiel zeigen
+        warning.style.display = "none";
+        canvasEl.style.display = "block";
     }
 }

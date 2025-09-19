@@ -1,10 +1,9 @@
-
 @font-face {
     font-family: 'zabras';
     src: url('./fonts/zabars.ttf') format('truetype');
 }
 
-.headline-gamename{
+.headline-gamename {
     text-align: center;
 }
 
@@ -12,11 +11,11 @@ body {
     background-color: black;
     background-image: url('./imgs/5_background/desert.png');
     background-size: cover;
-    /* background-overflow: visible; */
     background-position: 50% 0;
     font-family: 'zabras', Arial, Helvetica, sans-serif;
     font-size: 50px;
     letter-spacing: 5px;
+    margin: 0; /* wichtig für 100vh Overlays */
 }
 
 canvas {
@@ -26,38 +25,32 @@ canvas {
     padding: 0;
     height: 480px;
     position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    top: 0; bottom: 0; left: 0; right: 0;
     border-radius: 30px;
 }
 
 #startScreen {
     position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    border-radius: 30px;
+    inset: 0;
     opacity: 0;
     transform: scale(0.9);
     transition: opacity 2.5s ease-out, transform 2.5s ease-out;
-    animation: fadeIn 5.5s forwards;
+    animation: fadeIn 2.5s forwards;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1500;
 }
 
 @keyframes fadeIn {
     from { opacity: 0; transform: scale(0.5); }
     to { opacity: 1; transform: scale(1); }
 }
-/* 
-.fade-out {
-    opacity: 0;
-    transform: scale(0.9);
-    transition: opacity 1s ease-out, transform 1s ease-out;
-} */
-
-
 
 .menu-button {
     display: block;
@@ -78,27 +71,43 @@ canvas {
     background: #ffaa00;
     cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-  transform-style: preserve-3d; /* Dies erlaubt eine 3D-Rotation */
-  perspective: 1000px; /* Die Perspektive für den 3D-Effekt */
+    transform-style: preserve-3d;
+    perspective: 1000px;
 }
 
 #overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Generisches Overlay */
+.overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0,0,0,0.9);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000; /* stellt sicher  das es !über! ollem liegt */
+    z-index: 2000;
 }
+
+/* Unsichtbar */
+.hidden {
+    display: none;
+}
+
 
 .overlay-content {
     position: absolute;
-    top: 50%;
-    left: 50%;
+    top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     background: rgba(0, 0, 0, 0.9);
     color: white;
@@ -110,50 +119,111 @@ canvas {
 
 .header-game-elpolloloco {
     font-size: 60px;
-    color:#ffaa00;
+    color: #ffaa00;
     text-shadow: #ffaa00;
     background-color: black;
-
 }
 
 .header-game-controll {
     font-size: 40px;
     color: #f3a71a;
     letter-spacing: 8px;
-    font-family: Impact, Helvetica, 'Arial Narrow Bold', sans-serif ;
+    font-family: Impact, Helvetica, 'Arial Narrow Bold', sans-serif;
     background-color: black;
 }
 
-.game-controll-txt {
-    font-size: 20px;
-    color: #f7c25f;
-    font-family: Impact, Helvetica, 'Arial Narrow Bold', sans-serif ;
-    font-weight: normal;
-    background-color: black;
-}
-
+.game-controll-txt,
 .game-controll-back {
     font-size: 20px;
     color: #f7c25f;
-    font-family: Impact, Helvetica, 'Arial Narrow Bold', sans-serif ;
+    font-family: Impact, Helvetica, 'Arial Narrow Bold', sans-serif;
     font-weight: normal;
     background-color: black;
 }
 
-
 @media only screen and (max-width: 720px) {
-    canvas {
-        width: 100%;
-    }
+    canvas { width: 100%; }
 }
 
 @media only screen and (max-height: 480px) {
-    canvas {
-        height: 100vh;
-    }
+    canvas { height: 100vh; }
 }
 
 .background-el-poll-loco {
     display: flex;
     background-color: darkgreen;
+}
+
+/* Rotate-Warnung: vollflächig schwarz */
+#rotate-warning {
+    display: none;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;           /* voll schwarz */
+    color: white;
+    padding: 20px;
+    text-align: center;
+    font-size: 20px;
+    border-radius: 0;           /* keine Rundung für Vollfläche */
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Mobile Controls: standardmäßig versteckt */
+#mobile-controls {
+    display: none;
+}
+
+/* Nur auf Touch-Geräten UND im Querformat anzeigen */
+@media (hover: none) and (pointer: coarse) and (orientation: landscape) {
+    #mobile-controls {
+        position: fixed;
+        bottom: 1rem;             /* gewünschter Abstand */
+        left: 0; right: 0;
+        display: flex;
+        justify-content: center;  /* mittig zentriert */
+        align-items: center;
+        gap: 3rem;                /* Abstand zwischen links/rechts Gruppe */
+        z-index: 2000;
+        pointer-events: none;     /* Container klickt nicht, nur Buttons */
+    }
+
+    .control-group {
+        display: flex;
+        gap: 10px;
+        pointer-events: auto;     /* Buttons klickbar */
+    }
+
+    #mobile-controls button {
+        width: 64px;
+        height: 64px;
+        margin: 0 5px;
+        border: none;
+        border-radius: 16px;
+        background: none;         /* kein transparenter Hintergrund */
+        font-size: 28px;
+        cursor: pointer;
+        touch-action: none;       /* verhindert Scroll/Pinch bei Touch */
+    }
+
+    .button-sign {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 64px;
+        height: 64px;
+        user-select: none;
+        -webkit-user-select: none;
+        pointer-events: none;     /* Bild/Emoji blockiert Touch nicht */
+    }
+
+    #mobile-controls img.button-sign {
+        width: 64px;
+        height: 64px;
+        object-fit: contain;
+    }
 }
